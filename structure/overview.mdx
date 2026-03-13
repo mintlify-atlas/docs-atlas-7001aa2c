@@ -1,0 +1,141 @@
+---
+title: 'Project Structure Overview'
+description: 'Understanding the ZOODOM project architecture and organization'
+icon: 'folder-tree'
+---
+
+## Introduction
+
+ZOODOM is a zoo website built with **Astro**, a modern web framework that delivers fast, content-focused websites. The project follows a clean, organized structure that separates concerns between pages, components, layouts, and assets.
+
+## Directory Structure
+
+The ZOODOM project is organized into the following key directories:
+
+<CodeGroup>
+```bash Project Tree
+src/
+├── assets/          # Images, styles, and static resources
+│   ├── Logo.svg
+│   ├── hero-img.png
+│   ├── Texture.png
+│   └── global.css
+├── components/      # Reusable Astro components
+│   └── Head.astro
+├── layouts/         # Page layout templates
+│   └── Layout.astro
+└── pages/          # File-based routing pages
+    └── index.astro
+
+public/             # Static assets served directly
+└── cover.png
+```
+</CodeGroup>
+
+## Architecture Overview
+
+<CardGroup cols={2}>
+  <Card title="Pages" icon="file" href="/structure/pages">
+    File-based routing system with the homepage at `index.astro`
+  </Card>
+  
+  <Card title="Components" icon="puzzle-piece" href="/structure/components">
+    Reusable UI components like the `Head` component for SEO metadata
+  </Card>
+  
+  <Card title="Layouts" icon="layer-group" href="/structure/layouts">
+    Page templates that provide consistent structure across the site
+  </Card>
+  
+  <Card title="Assets" icon="image" href="/structure/assets">
+    Images, logos, textures, and global CSS styling
+  </Card>
+</CardGroup>
+
+## Technology Stack
+
+<AccordionGroup>
+  <Accordion title="Astro Framework">
+    The core framework providing:
+    - File-based routing
+    - Component-based architecture
+    - Optimized asset handling
+    - Static site generation
+  </Accordion>
+  
+  <Accordion title="Bootstrap 5.3.8">
+    UI framework for responsive design:
+    - Grid system for layout
+    - Pre-built components (navbar, buttons)
+    - Utility classes for spacing and styling
+  </Accordion>
+  
+  <Accordion title="Google Fonts (Onest)">
+    Custom typography using the Onest font family with variable weights (100-900)
+  </Accordion>
+</AccordionGroup>
+
+## Design System
+
+The project uses a comprehensive color system defined in CSS custom properties:
+
+<Tabs>
+  <Tab title="Brand Colors">
+    **Green Palette** - Primary brand colors ranging from `green-50` to `green-900`
+    
+    Used for primary actions, branding elements, and success states.
+  </Tab>
+  
+  <Tab title="Accent Colors">
+    **Accent Green** - Secondary green palette for highlights and accents
+    
+    Provides variation while maintaining brand consistency.
+  </Tab>
+  
+  <Tab title="Extended Colors">
+    Additional color palettes:
+    - **Blue** - Information and links
+    - **Yellow** - Warnings and highlights
+    - **Orange** - Attention states
+    - **Red** - Errors and critical actions
+  </Tab>
+  
+  <Tab title="Neutral Colors">
+    **Gray Scale** - From white to black with 10 shades
+    
+    Used for text, backgrounds, and UI elements.
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<Steps>
+  <Step title="SEO Optimized">
+    Complete meta tags including Open Graph for social media sharing
+  </Step>
+  
+  <Step title="Responsive Design">
+    Bootstrap grid system ensures mobile-first, responsive layouts
+  </Step>
+  
+  <Step title="Asset Optimization">
+    Astro's built-in asset pipeline for optimized image delivery
+  </Step>
+  
+  <Step title="Component Architecture">
+    Modular, reusable components for maintainable code
+  </Step>
+</Steps>
+
+## Next Steps
+
+Explore each section in detail:
+
+- [Pages](/structure/pages) - Learn about the routing and page structure
+- [Components](/structure/components) - Understand reusable component patterns
+- [Layouts](/structure/layouts) - Discover the layout system
+- [Assets](/structure/assets) - Explore images, styles, and static files
+
+<Info>
+  **Tip:** The ZOODOM project follows Astro's conventions, making it easy to extend with new pages, components, and features.
+</Info>

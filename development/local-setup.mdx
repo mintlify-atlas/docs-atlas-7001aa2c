@@ -1,0 +1,149 @@
+---
+title: 'Local Setup'
+description: 'Set up your local development environment for the ZOODOM project'
+---
+
+This guide will help you set up the ZOODOM project on your local machine for development.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js**: Version 22.12.0 or higher
+- **npm**: Comes bundled with Node.js
+- **Git**: For cloning the repository
+
+<Tip>
+  You can check your Node.js version by running `node --version` in your terminal.
+</Tip>
+
+## Installation Steps
+
+### 1. Clone the Repository
+
+First, clone the ZOODOM repository from GitHub:
+
+```bash
+git clone https://github.com/Iceheop/zoodom.git
+cd zoodom
+```
+
+### 2. Install Dependencies
+
+Install all required npm packages:
+
+```bash
+npm install
+```
+
+This will install:
+- **Astro** (v6.0.4 or higher) - The core framework
+- All other project dependencies
+
+### 3. Start the Development Server
+
+Run the development server:
+
+```bash
+npm run dev
+```
+
+The site will be available at `http://localhost:4321`
+
+<Check>
+  Your development server is running! Open your browser and navigate to `http://localhost:4321` to see the site.
+</Check>
+
+## Project Structure
+
+Once installed, you'll find the following structure:
+
+```text
+zoodom/
+├── public/              # Static assets
+├── src/
+│   ├── assets/         # Images, CSS, and other assets
+│   │   ├── Logo.svg
+│   │   ├── Texture.png
+│   │   ├── global.css
+│   │   └── hero-img.png
+│   ├── components/     # Reusable Astro components
+│   │   └── Head.astro
+│   ├── layouts/        # Page layouts
+│   │   └── Layout.astro
+│   └── pages/          # Route pages
+│       └── index.astro
+├── astro.config.mjs    # Astro configuration
+├── package.json        # Project dependencies and scripts
+└── tsconfig.json       # TypeScript configuration
+```
+
+## Development Commands
+
+All commands should be run from the project root:
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start local development server at `localhost:4321` |
+| `npm run build` | Build production site to `./dist/` |
+| `npm run preview` | Preview production build locally |
+| `npm run astro` | Run Astro CLI commands |
+
+## Configuration
+
+The site is configured in `astro.config.mjs`:
+
+```javascript
+import { defineConfig } from 'astro/config';
+
+export default defineConfig({
+    site: 'https://zoodomi.netlify.app',
+});
+```
+
+The `site` property defines the production URL where the site will be deployed.
+
+## Troubleshooting
+
+### Node Version Issues
+
+If you encounter errors during installation, verify your Node.js version:
+
+```bash
+node --version
+```
+
+ZOODOM requires Node.js **v22.12.0 or higher**. If your version is lower, upgrade Node.js.
+
+### Port Already in Use
+
+If port 4321 is already in use, Astro will automatically try the next available port. Check the terminal output for the actual URL.
+
+### Dependencies Not Installing
+
+If `npm install` fails:
+
+1. Delete `node_modules` folder and `package-lock.json`
+2. Clear npm cache: `npm cache clean --force`
+3. Run `npm install` again
+
+### Build Errors
+
+If you see TypeScript or build errors:
+
+1. Ensure all dependencies are installed
+2. Check that you're using the correct Node.js version
+3. Try deleting the `.astro` cache folder and rebuilding
+
+<Warning>
+  Always ensure you're running the correct Node.js version (≥22.12.0) to avoid compatibility issues.
+</Warning>
+
+## Next Steps
+
+Now that your local environment is set up, you can:
+
+- Learn about [building the project](/development/building)
+- Understand the [deployment process](/development/deployment)
+- Explore the [project structure](/structure/overview)
+- Start developing new [features](/features/homepage)

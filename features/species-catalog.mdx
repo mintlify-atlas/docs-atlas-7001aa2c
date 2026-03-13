@@ -1,0 +1,477 @@
+---
+title: Species Catalog
+description: Planned feature for showcasing the zoo's animal collection with detailed information and images
+---
+
+The Species Catalog ("Especies") will be a comprehensive directory of all animals housed at ZOODOM, providing visitors with educational content about each species.
+
+## Status
+
+<Warning>
+  This feature is currently in the planning phase. The navigation link exists on the homepage but doesn't link to an implementation yet.
+</Warning>
+
+**Current State:**
+- Navigation link present: `src/pages/index.astro:20`
+- No dedicated page or component exists
+- No data structure defined
+
+## Proposed Architecture
+
+The species catalog can be implemented using Astro's content collections for optimal performance and developer experience.
+
+### Content Collection Structure
+
+Create a content collection for species data:
+
+<Steps>
+  <Step title="Define Collection Schema">
+    Create `src/content/config.ts` to define the species schema:
+    
+    ```typescript
+    import { defineCollection, z } from 'astro:content';
+    
+    const speciesCollection = defineCollection({
+      type: 'content',
+      schema: z.object({
+        name: z.string(),
+        scientificName: z.string(),
+        category: z.enum(['mamiferos', 'aves', 'reptiles', 'anfibios', 'peces']),
+        habitat: z.string(),
+        diet: z.enum(['carnivoro', 'herbivoro', 'omnivoro']),
+        conservationStatus: z.enum([
+          'no-amenazado',
+          'casi-amenazado',
+          'vulnerable',
+          'en-peligro',
+          'critico'
+        ]),
+        image: z.string(),
+        gallery: z.array(z.string()).optional(),
+        funFacts: z.array(z.string()),
+        weight: z.string().optional(),
+        length: z.string().optional(),
+        lifespan: z.string().optional(),
+        featured: z.boolean().default(false),
+      }),
+    });
+    
+    export const collections = {
+      'especies': speciesCollection,
+    };
+    ```
+  </Step>
+  
+  <Step title="Create Species Content">
+    Add individual species as MDX files in `src/content/especies/`:
+    
+    ```mdx
+    ---
+    # src/content/especies/leon-africano.mdx
+    name: León Africano
+    scientificName: Panthera leo
+    category: mamiferos
+    habitat: Sabanas y praderas de África subsahariana
+    diet: carnivoro
+    conservationStatus: vulnerable
+    image: /images/especies/leon-africano.jpg
+    gallery:
+      - /images/especies/leon-africano-1.jpg
+      - /images/especies/leon-africano-2.jpg
+      - /images/especies/leon-africano-3.jpg
+    funFacts:
+      - Los leones son los únicos felinos que viven en grupos llamados manadas
+      - Un rugido de león puede escucharse a 8 kilómetros de distancia
+      - Los machos pueden dormir hasta 20 horas al día
+    weight: 190-225 kg (machos), 130-180 kg (hembras)
+    length: 1.7-2.5 metros
+    lifespan: 10-14 años en vida silvestre
+    featured: true
+    ---
+    
+    El león africano es conocido como el "rey de la selva" aunque 
+    realmente habita en las sabanas. Son animales sociales que viven 
+    en manadas lideradas por hembras emparentadas.
+    
+    ## Comportamiento Social
+    
+    Las leonas son las principales cazadoras del grupo, mientras que 
+    los machos protegen el territorio. Las manadas pueden tener entre 
+    3 y 30 individuos.
+    
+    ## Conservación
+    
+    Las poblaciones de leones han disminuido significativamente en 
+    las últimas décadas debido a la pérdida de hábitat y conflictos 
+    con humanos. ZOODOM participa en programas de reproducción para 
+    ayudar a preservar esta especie icónica.
+    ```
+  </Step>
+  
+  <Step title="Build Catalog Pages">
+    Create dynamic routes for species listing and detail pages
+  </Step>
+</Steps>
+
+### Page Structure
+
+<CardGroup cols={2}>
+  <Card title="Listing Page" icon="grid">
+    **Route:** `/especies`
+    
+    Display all species in a filterable grid with search and category filters
+  </Card>
+  <Card title="Detail Page" icon="file">
+    **Route:** `/especies/[slug]`
+    
+    Individual species page with complete information, gallery, and related species
+  </Card>
+</CardGroup>
+
+## Implementation Example
+
+### Species Listing Page
+
+<CodeGroup>
+```astro src/pages/especies/index.astro
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import SpeciesCard from '../../components/SpeciesCard.astro';
+
+const allSpecies = await getCollection('especies');
+const categories = ['todos', 'mamiferos', 'aves', 'reptiles', 'anfibios', 'peces'];
+---
+
+<Layout>
+  <main>
+    <section class="container px-4 py-5">
+      <h1 class="text-center mb-4">Nuestras Especies</h1>
+      <p class="text-center mb-5">
+        Descubre la increíble diversidad de animales que habitan en ZOODOM
+      </p>
+      
+      <!-- Category Filter -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="btn-group" role="group">
+            {categories.map((category) => (
+              <button 
+                type="button" 
+                class="btn btn-outline-success"
+                data-category={category}
+              >
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Species Grid -->
+      <div class="row g-4">
+        {allSpecies.map((species) => (
+          <div class="col-lg-4 col-md-6 col-12" data-category={species.data.category}>
+            <SpeciesCard species={species} />
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  // Client-side filtering logic
+  const buttons = document.querySelectorAll('[data-category]');
+  const cards = document.querySelectorAll('.col-lg-4');
+  
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      const category = button.getAttribute('data-category');
+      
+      cards.forEach(card => {
+        if (category === 'todos' || card.getAttribute('data-category') === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // Update active button
+      buttons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+    });
+  });
+</script>
+```
+</CodeGroup>
+
+### Species Card Component
+
+<CodeGroup>
+```astro src/components/SpeciesCard.astro
+---
+interface Props {
+  species: any;
+}
+
+const { species } = Astro.props;
+const { name, scientificName, category, conservationStatus, image } = species.data;
+
+const statusColors = {
+  'no-amenazado': 'success',
+  'casi-amenazado': 'info',
+  'vulnerable': 'warning',
+  'en-peligro': 'danger',
+  'critico': 'dark'
+};
+---
+
+<div class="card h-100 species-card">
+  <img src={image} class="card-img-top" alt={name} />
+  <div class="card-body">
+    <h5 class="card-title">{name}</h5>
+    <p class="card-text text-muted fst-italic">{scientificName}</p>
+    <div class="d-flex justify-content-between align-items-center">
+      <span class="badge bg-secondary">{category}</span>
+      <span class={`badge bg-${statusColors[conservationStatus]}`}>
+        {conservationStatus.replace('-', ' ')}
+      </span>
+    </div>
+  </div>
+  <div class="card-footer">
+    <a href={`/especies/${species.slug}`} class="btn btn-success btn-sm w-100">
+      Ver detalles
+    </a>
+  </div>
+</div>
+
+<style>
+  .species-card {
+    transition: transform 0.3s ease;
+  }
+  
+  .species-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .card-img-top {
+    height: 250px;
+    object-fit: cover;
+  }
+</style>
+```
+</CodeGroup>
+
+### Species Detail Page
+
+<CodeGroup>
+```astro src/pages/especies/[slug].astro
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const species = await getCollection('especies');
+  return species.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const { 
+  name, 
+  scientificName, 
+  habitat, 
+  diet, 
+  conservationStatus,
+  image,
+  gallery,
+  funFacts,
+  weight,
+  length,
+  lifespan
+} = entry.data;
+---
+
+<Layout>
+  <main>
+    <!-- Hero Section -->
+    <section class="species-hero" style={`background-image: url(${image})`}>
+      <div class="overlay">
+        <div class="container">
+          <h1 class="text-white">{name}</h1>
+          <p class="text-white fst-italic">{scientificName}</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Species Info -->
+    <section class="container py-5">
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="content">
+            <Content />
+          </div>
+          
+          {funFacts && (
+            <div class="fun-facts mt-5">
+              <h3>Datos Curiosos</h3>
+              <ul class="list-group">
+                {funFacts.map((fact: string) => (
+                  <li class="list-group-item">
+                    <i class="bi bi-star-fill text-warning me-2"></i>
+                    {fact}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+        
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">Información</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <strong>Hábitat:</strong><br/>{habitat}
+              </li>
+              <li class="list-group-item">
+                <strong>Dieta:</strong><br/>{diet}
+              </li>
+              {weight && (
+                <li class="list-group-item">
+                  <strong>Peso:</strong><br/>{weight}
+                </li>
+              )}
+              {length && (
+                <li class="list-group-item">
+                  <strong>Longitud:</strong><br/>{length}
+                </li>
+              )}
+              {lifespan && (
+                <li class="list-group-item">
+                  <strong>Esperanza de vida:</strong><br/>{lifespan}
+                </li>
+              )}
+              <li class="list-group-item">
+                <strong>Estado de conservación:</strong><br/>
+                <span class="badge bg-warning">{conservationStatus}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gallery -->
+      {gallery && gallery.length > 0 && (
+        <div class="row mt-5">
+          <div class="col-12">
+            <h3>Galería</h3>
+            <div class="row g-3">
+              {gallery.map((img: string) => (
+                <div class="col-md-4">
+                  <img src={img} class="img-fluid rounded" alt={name} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .species-hero {
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  
+  .overlay {
+    background: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+</style>
+```
+</CodeGroup>
+
+## Features to Implement
+
+<AccordionGroup>
+  <Accordion title="Search Functionality">
+    Add a search bar to filter species by name:
+    ```javascript
+    const searchInput = document.querySelector('#species-search');
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      cards.forEach(card => {
+        const name = card.querySelector('.card-title').textContent.toLowerCase();
+        card.style.display = name.includes(searchTerm) ? 'block' : 'none';
+      });
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Conservation Status Filter">
+    Allow filtering by conservation status to highlight endangered species
+  </Accordion>
+  
+  <Accordion title="Interactive Map">
+    Show where each species is located within the zoo using an SVG map
+  </Accordion>
+  
+  <Accordion title="Feeding Schedule">
+    Display feeding times for each species to help visitors plan their visit
+  </Accordion>
+  
+  <Accordion title="Related Species">
+    Show similar animals at the bottom of each species detail page
+  </Accordion>
+</AccordionGroup>
+
+## Data Integration
+
+Consider integrating with external APIs for enriched content:
+
+<CardGroup cols={2}>
+  <Card title="IUCN Red List API" icon="leaf">
+    Real-time conservation status data
+  </Card>
+  <Card title="Wikipedia API" icon="book">
+    Additional scientific information
+  </Card>
+  <Card title="iNaturalist" icon="camera">
+    Community observations and photos
+  </Card>
+  <Card title="Animal Sounds Library" icon="volume-up">
+    Audio recordings of animal calls
+  </Card>
+</CardGroup>
+
+## SEO Optimization
+
+Each species page should include proper meta tags:
+
+```astro
+<Head 
+  title={`${name} - ZOODOM`}
+  description={`Conoce al ${name} (${scientificName}) en ZOODOM. ${habitat}`}
+  image={image}
+/>
+```
+
+<Note>
+  Use Astro's built-in image optimization with the `<Image>` component for faster page loads and better performance.
+</Note>

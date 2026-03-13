@@ -1,0 +1,304 @@
+---
+title: Typography
+description: Font configuration and typographic styles used throughout the ZOODOM website
+---
+
+ZOODOM uses the **Onest** font family from Google Fonts, providing a modern, versatile, and highly readable typeface for all text content.
+
+## Font Family
+
+### Onest
+
+**Onest** is a variable font that supports weights from 100 to 900, giving designers flexibility to create clear hierarchies and emphasis.
+
+- **Provider**: Google Fonts
+- **Type**: Variable font
+- **Weight range**: 100-900
+- **Style**: Sans-serif
+- **Language support**: Latin, extended Latin
+
+## Implementation
+
+The Onest font is loaded in the `<Head>` component (`src/components/Head.astro:32-34`) via Google Fonts CDN:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" rel="stylesheet">
+```
+
+### Preconnect Optimization
+
+The `preconnect` directives establish early connections to Google's font servers, reducing latency and improving load times.
+
+### Display Strategy
+
+The `display=swap` parameter ensures text remains visible during font loading, preventing FOIT (Flash of Invisible Text).
+
+## Base Typography Styles
+
+Default typography is configured in `src/assets/global.css:64-68`:
+
+```css
+html, body {
+  font-family: 'Onest', sans-serif;
+  background-color: var(--color-neutral-white-900);
+  color: var(--color-neutral-black-900);
+}
+```
+
+## Type Scale
+
+### Headings
+
+The primary heading style is defined for `<h1>` elements:
+
+```css
+h1 {
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--color-neutral-black-900);
+}
+```
+
+**Usage:**
+- Font size: `64px`
+- Font weight: `700` (Bold)
+- Color: Dark black (`#222222`)
+- Best for: Hero sections, page titles, major headings
+
+### Body Text
+
+Paragraph styling is configured for optimal readability:
+
+```css
+p {
+  font-size: 18px;
+  color: var(--color-neutral-gray-900);
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+```
+
+**Usage:**
+- Font size: `18px`
+- Color: Dark gray (`#4B4B4B`)
+- Spacing: `20px` top margin, `30px` bottom margin
+- Best for: Body copy, descriptions, general content
+
+## Typography Hierarchy
+
+While only `<h1>` and `<p>` are explicitly styled in the base CSS, you can extend the type scale using Onest's variable weights:
+
+```css
+/* Recommended heading hierarchy */
+h1 {
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+h4 {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+h5 {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+h6 {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+```
+
+## Font Weights
+
+Onest supports the full range of variable weights:
+
+| Weight | Name | Usage |
+|--------|------|-------|
+| 100 | Thin | Decorative, minimal use |
+| 200 | Extra Light | Subtle accents |
+| 300 | Light | Secondary text |
+| 400 | Regular | Body text default |
+| 500 | Medium | Emphasized body text |
+| 600 | Semi Bold | Subheadings, important text |
+| 700 | Bold | Headings, strong emphasis |
+| 800 | Extra Bold | Hero text, major callouts |
+| 900 | Black | Extreme emphasis (rare use) |
+
+### Example Usage
+
+```html
+<h1 style="font-weight: 700">Welcome to ZOODOM</h1>
+<h2 style="font-weight: 600">Explore Our Animals</h2>
+<p style="font-weight: 400">Discover amazing wildlife...</p>
+<strong style="font-weight: 600">Important notice</strong>
+```
+
+## Responsive Typography
+
+Consider implementing responsive font sizes for better mobile experiences:
+
+```css
+/* Mobile first approach */
+h1 {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  h1 {
+    font-size: 48px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  h1 {
+    font-size: 64px;
+  }
+}
+```
+
+## Text Colors
+
+Typography should use semantic colors from the design system:
+
+```css
+/* Primary text */
+.text-primary {
+  color: var(--color-neutral-black-900);
+}
+
+/* Secondary text */
+.text-secondary {
+  color: var(--color-neutral-gray-900);
+}
+
+/* Muted text */
+.text-muted {
+  color: var(--color-neutral-gray-600);
+}
+
+/* Brand colored text */
+.text-brand {
+  color: var(--color-brand-green-700);
+}
+```
+
+## Line Height Guidelines
+
+For optimal readability:
+
+- **Headings**: 1.2 - 1.3x font size
+- **Body text**: 1.5 - 1.6x font size
+- **Small text**: 1.4 - 1.5x font size
+
+```css
+h1, h2, h3 {
+  line-height: 1.2;
+}
+
+p {
+  line-height: 1.6;
+}
+
+small {
+  line-height: 1.4;
+}
+```
+
+## Usage Examples
+
+### Hero Section
+
+```astro
+<section>
+  <h1>Bienvenido a nuestro zoológico</h1>
+  <p>Planea una salida en familia a nuestro parque zoológico nacional...</p>
+</section>
+```
+
+This example is from `src/pages/index.astro:38-39`, demonstrating the large heading paired with descriptive body text.
+
+### Navigation Links
+
+Bootstrap's navigation components inherit the Onest font family:
+
+```html
+<ul class="navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link" href="#">Inicio</a>
+  </li>
+</ul>
+```
+
+### Buttons
+
+Buttons also inherit Onest, maintaining typographic consistency:
+
+```html
+<button class="btn btn-success">Reservar ahora</button>
+```
+
+## Accessibility
+
+### Font Size
+
+- Minimum body text size: `16px` (ZOODOM uses `18px`)
+- Avoid sizes smaller than `14px` for critical text
+- Use relative units (`rem`, `em`) for scalability
+
+### Contrast
+
+Ensure sufficient contrast between text and backgrounds:
+
+- Normal text: minimum 4.5:1 contrast ratio
+- Large text (18px+): minimum 3:1 contrast ratio
+
+The default color combination passes WCAG AA standards:
+- Black text (`#222222`) on white background (`#FFFFFF`): ~16:1 ratio ✓
+- Gray text (`#4B4B4B`) on white background: ~8.8:1 ratio ✓
+
+## Performance
+
+### Font Loading Strategy
+
+1. **Preconnect** to Google Fonts servers
+2. **Swap display** strategy prevents invisible text
+3. **Variable font** reduces file size (one file for all weights)
+
+### Optimization Tips
+
+- Limit weight variations used on the page
+- Consider hosting fonts locally for production
+- Use `font-display: swap` to prevent FOIT
+
+```css
+@font-face {
+  font-family: 'Onest';
+  src: url('/fonts/onest-variable.woff2') format('woff2');
+  font-display: swap;
+  font-weight: 100 900;
+}
+```

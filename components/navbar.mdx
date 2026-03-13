@@ -1,0 +1,313 @@
+---
+title: 'Navbar Component'
+description: 'Navigation bar implementation for ZOODOM website'
+---
+
+# Navbar Component
+
+The ZOODOM website features a responsive navigation bar built with Bootstrap 5 classes. The navbar is currently implemented inline within the `index.astro` page but follows a reusable pattern that can be extracted into its own component.
+
+## Current Implementation
+
+The navbar is found in `src/pages/index.astro` (lines 10-33):
+
+```astro
+<nav class="navbar navbar-expand-lg">
+  <section class="container px-5 py-4">
+    <a class="navbar-brand" href="#">
+      <img src={logo.src} class="logo" alt="">
+    </a>
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-4">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Especies</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Galeria</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Blog</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Contacto</a>
+      </li>
+    </ul>
+  </section>
+</nav>
+```
+
+## Features
+
+### Bootstrap Navbar Classes
+
+<ParamField path="navbar" type="class">
+  Base Bootstrap navbar class providing the foundational navbar structure.
+</ParamField>
+
+<ParamField path="navbar-expand-lg" type="class">
+  Makes the navbar responsive, collapsing on screens smaller than large breakpoint (992px).
+</ParamField>
+
+<ParamField path="container" type="class">
+  Centers the navbar content with responsive padding.
+</ParamField>
+
+<ParamField path="px-5 py-4" type="class">
+  Custom spacing: 5 units of horizontal padding and 4 units of vertical padding.
+</ParamField>
+
+### Brand Logo
+
+The navbar includes the ZOODOM logo:
+
+```astro
+<a class="navbar-brand" href="#">
+  <img src={logo.src} class="logo" alt="">
+</a>
+```
+
+- `navbar-brand`: Bootstrap class for logo/brand styling
+- Logo imported from `../assets/logo.svg`
+- Custom `logo` class for additional styling
+
+### Navigation Links
+
+Five main navigation items:
+
+1. **Inicio** (Home) - Active page indicator
+2. **Especies** (Species) - Animal collection
+3. **Galeria** (Gallery) - Photo gallery
+4. **Blog** - News and articles
+5. **Contacto** (Contact) - Contact information
+
+<ParamField path="ms-auto" type="class">
+  Pushes navigation links to the right side using margin-start auto.
+</ParamField>
+
+<ParamField path="gap-4" type="class">
+  Adds spacing between navigation items (4 units of gap).
+</ParamField>
+
+<ParamField path="nav-link active" type="class">
+  Indicates the current active page. Uses `aria-current="page"` for accessibility.
+</ParamField>
+
+## Usage in Layout
+
+Currently used in the homepage:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import logo from '../assets/logo.svg';
+---
+
+<Layout>
+  <main>
+    <nav class="navbar navbar-expand-lg">
+      <!-- Navbar content -->
+    </nav>
+    
+    <!-- Page content -->
+  </main>
+</Layout>
+```
+
+## Creating a Reusable Component
+
+To extract this into a standalone component, create `src/components/Navbar.astro`:
+
+```astro
+---
+import logo from '../assets/logo.svg';
+
+interface Props {
+  activePage?: 'inicio' | 'especies' | 'galeria' | 'blog' | 'contacto';
+}
+
+const { activePage = 'inicio' } = Astro.props;
+---
+
+<nav class="navbar navbar-expand-lg">
+  <section class="container px-5 py-4">
+    <a class="navbar-brand" href="/">
+      <img src={logo.src} class="logo" alt="ZOODOM Logo">
+    </a>
+    <button class="navbar-toggler" type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#navbarNav" 
+            aria-controls="navbarNav" 
+            aria-expanded="false" 
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-4">
+        <li class="nav-item">
+          <a class={`nav-link ${activePage === 'inicio' ? 'active' : ''}`} 
+             aria-current={activePage === 'inicio' ? 'page' : undefined}
+             href="/">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class={`nav-link ${activePage === 'especies' ? 'active' : ''}`}
+             aria-current={activePage === 'especies' ? 'page' : undefined}
+             href="/especies">Especies</a>
+        </li>
+        <li class="nav-item">
+          <a class={`nav-link ${activePage === 'galeria' ? 'active' : ''}`}
+             aria-current={activePage === 'galeria' ? 'page' : undefined}
+             href="/galeria">Galeria</a>
+        </li>
+        <li class="nav-item">
+          <a class={`nav-link ${activePage === 'blog' ? 'active' : ''}`}
+             aria-current={activePage === 'blog' ? 'page' : undefined}
+             href="/blog">Blog</a>
+        </li>
+        <li class="nav-item">
+          <a class={`nav-link ${activePage === 'contacto' ? 'active' : ''}`}
+             aria-current={activePage === 'contacto' ? 'page' : undefined}
+             href="/contacto">Contacto</a>
+        </li>
+      </ul>
+    </div>
+  </section>
+</nav>
+```
+
+### Enhanced Features
+
+This reusable version adds:
+
+1. **Mobile Toggle**: Hamburger menu for responsive design
+2. **Active Page Prop**: Pass `activePage` to highlight current section
+3. **Accessibility**: Proper ARIA labels and alt text
+4. **Collapsible Menu**: Wraps nav items in `navbar-collapse` for mobile
+5. **Real Links**: Updates href attributes to actual page paths
+
+## Usage Examples
+
+### Basic Usage
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+---
+
+<Layout>
+  <Navbar />
+  <main>
+    <!-- Homepage content -->
+  </main>
+</Layout>
+```
+
+### With Active Page
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+---
+
+<Layout>
+  <Navbar activePage="especies" />
+  <main>
+    <!-- Species page content -->
+  </main>
+</Layout>
+```
+
+### On Blog Page
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+---
+
+<Layout>
+  <Navbar activePage="blog" />
+  <main>
+    <article>
+      <h1>Latest Zoo News</h1>
+      <!-- Blog content -->
+    </article>
+  </main>
+</Layout>
+```
+
+## Styling Considerations
+
+### Custom Logo Class
+
+The `.logo` class can be defined in your CSS:
+
+```css
+.logo {
+  height: 50px;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .logo {
+    height: 40px;
+  }
+}
+```
+
+### Active Link Styling
+
+Bootstrap provides default active link styling, but you can customize:
+
+```css
+.nav-link.active {
+  color: var(--zoo-primary-color) !important;
+  font-weight: 600;
+  border-bottom: 2px solid var(--zoo-primary-color);
+}
+```
+
+### Navbar Background
+
+Add background color or transparency:
+
+```css
+.navbar {
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar.navbar-transparent {
+  background-color: transparent;
+  box-shadow: none;
+}
+```
+
+## Responsive Behavior
+
+- **Desktop (≥992px)**: Full horizontal navigation with logo on left, links on right
+- **Tablet/Mobile (&lt;992px)**: Collapsed menu with hamburger toggle button
+- The `gap-4` utility creates consistent spacing between navigation items
+- The `ms-auto` class aligns navigation to the right on larger screens
+
+## Accessibility Features
+
+- `aria-current="page"` indicates the active page for screen readers
+- `aria-label` on toggle button describes its purpose
+- Semantic HTML with `<nav>` element
+- Proper link structure with descriptive text
+
+<Warning>
+The current implementation has empty `alt` attributes on the logo. Always provide descriptive alt text for accessibility:
+```astro
+<img src={logo.src} class="logo" alt="ZOODOM - Parque Zoológico Nacional">
+```
+</Warning>
+
+## Related Components
+
+- [Layout Component](/components/layout) - Provides Bootstrap integration for navbar
+- [Head Component](/components/head) - Manages page metadata

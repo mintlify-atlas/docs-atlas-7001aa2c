@@ -1,0 +1,617 @@
+---
+title: Blog
+description: Content publishing system for zoo news, conservation updates, and educational articles
+---
+
+The ZOODOM Blog will serve as a platform for sharing news, conservation stories, educational content, and updates about the zoo's animals and programs.
+
+## Status
+
+<Warning>
+  Currently planned but not implemented. A navigation link exists at `src/pages/index.astro:26` but no blog system is built yet.
+</Warning>
+
+## Content Strategy
+
+<CardGroup cols={3}>
+  <Card title="Animal Stories" icon="paw">
+    Updates about individual animals, births, and milestones
+  </Card>
+  <Card title="Conservation News" icon="leaf">
+    Zoo's participation in conservation programs
+  </Card>
+  <Card title="Behind the Scenes" icon="eye">
+    Day in the life of zookeepers and staff
+  </Card>
+  <Card title="Educational Articles" icon="book">
+    Wildlife facts, habitat information, and species profiles
+  </Card>
+  <Card title="Event Recaps" icon="calendar">
+    Photo galleries and summaries of past events
+  </Card>
+  <Card title="Visitor Stories" icon="users">
+    Testimonials and memorable visitor experiences
+  </Card>
+</CardGroup>
+
+## Content Collection Implementation
+
+Implement the blog using Astro's content collections:
+
+<Steps>
+  <Step title="Define Blog Schema">
+    Create schema in `src/content/config.ts`:
+    
+    ```typescript
+    import { defineCollection, z } from 'astro:content';
+    
+    const blogCollection = defineCollection({
+      type: 'content',
+      schema: z.object({
+        title: z.string(),
+        description: z.string(),
+        author: z.string(),
+        authorRole: z.string().optional(),
+        publishDate: z.date(),
+        updateDate: z.date().optional(),
+        category: z.enum([
+          'noticias',
+          'conservacion',
+          'educacion',
+          'eventos',
+          'animales',
+          'comunidad'
+        ]),
+        tags: z.array(z.string()),
+        featuredImage: z.string(),
+        imageAlt: z.string(),
+        featured: z.boolean().default(false),
+        draft: z.boolean().default(false),
+        readTime: z.number().optional(),
+      }),
+    });
+    
+    export const collections = {
+      'blog': blogCollection,
+    };
+    ```
+  </Step>
+  
+  <Step title="Create Blog Posts">
+    Add posts as MDX files in `src/content/blog/`:
+    
+    ```mdx
+    ---
+    # src/content/blog/bienvenida-cachorro-leon.mdx
+    title: ¡Bienvenido nuestro nuevo cachorro de león!
+    description: ZOODOM celebra el nacimiento de un saludable cachorro de león africano
+    author: María González
+    authorRole: Jefa de Cuidado Animal
+    publishDate: 2026-03-10
+    category: animales
+    tags:
+      - leones
+      - nacimientos
+      - conservación
+    featuredImage: /images/blog/leon-cachorro-2026.jpg
+    imageAlt: Cachorro de león africano de dos semanas
+    featured: true
+    readTime: 3
+    ---
+    
+    Nos complace anunciar el nacimiento de un hermoso cachorro de león africano 
+    el pasado 28 de febrero. Tanto la madre, Nala, como el cachorro se encuentran 
+    en excelente estado de salud.
+    
+    ## Un Momento Emocionante
+    
+    Este nacimiento es particularmente especial ya que es el primer cachorro de 
+    león nacido en ZOODOM en los últimos tres años. Nuestro equipo veterinario 
+    ha estado monitoreando de cerca a Nala durante todo su embarazo.
+    
+    ![Nala con su cachorro](/images/blog/nala-y-cachorro.jpg)
+    
+    ## Cuidados Especiales
+    
+    Durante las primeras semanas, el cachorro permanecerá en un área privada con 
+    su madre para garantizar su desarrollo saludable. Los visitantes podrán 
+    observarlos a través de nuestra cámara en vivo en el sitio web.
+    
+    ### Datos Curiosos
+    
+    - Los cachorros de león nacen ciegos y abren los ojos después de 3-11 días
+    - Pesan aproximadamente 1.5 kg al nacer
+    - Comienzan a caminar a las dos semanas de edad
+    - Se destetan alrededor de los 6 meses
+    
+    ## Nombra al Cachorro
+    
+    ¡Invitamos a nuestra comunidad a participar en elegir el nombre para nuestro 
+    nuevo miembro! Vota en nuestras redes sociales entre las siguientes opciones:
+    
+    1. Simba
+    2. Kiara
+    3. Zara
+    4. Malik
+    
+    La votación estará abierta hasta el 20 de marzo.
+    
+    ## Importancia para la Conservación
+    
+    Los leones africanos están clasificados como "Vulnerables" por la UICN. 
+    Los programas de reproducción en zoológicos ayudan a mantener poblaciones 
+    saludables y genéticamente diversas, contribuyendo a los esfuerzos de 
+    conservación global.
+    
+    <CallOut type="info">
+      ¿Quieres apoyar el cuidado de nuestros leones? Considera adoptar 
+      simbólicamente a Nala y su cachorro a través de nuestro programa de 
+      [Adopción de Animales](/adoptar).
+    </CallOut>
+    ```
+  </Step>
+  
+  <Step title="Build Blog Pages">
+    Create listing and detail pages
+  </Step>
+</Steps>
+
+## Blog Listing Page
+
+<CodeGroup>
+```astro src/pages/blog/index.astro
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+
+// Get all published blog posts, sorted by date
+const allPosts = (await getCollection('blog'))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+
+const featuredPosts = allPosts.filter(post => post.data.featured);
+const recentPosts = allPosts.slice(0, 9);
+
+const categories = [
+  { slug: 'todos', name: 'Todos' },
+  { slug: 'noticias', name: 'Noticias' },
+  { slug: 'conservacion', name: 'Conservación' },
+  { slug: 'educacion', name: 'Educación' },
+  { slug: 'eventos', name: 'Eventos' },
+  { slug: 'animales', name: 'Animales' },
+];
+---
+
+<Layout>
+  <main>
+    <!-- Featured Posts -->
+    {featuredPosts.length > 0 && (
+      <section class="featured-posts py-5 bg-light">
+        <div class="container">
+          <h2 class="mb-4">Destacados</h2>
+          <div class="row">
+            {featuredPosts.slice(0, 3).map(post => (
+              <div class="col-lg-4 mb-4">
+                <BlogCard post={post} featured={true} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+    
+    <!-- All Posts -->
+    <section class="container py-5">
+      <div class="row">
+        <div class="col-lg-9">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Blog de ZOODOM</h1>
+            <div class="dropdown">
+              <button class="btn btn-outline-success dropdown-toggle" 
+                      type="button" 
+                      data-bs-toggle="dropdown">
+                Filtrar por categoría
+              </button>
+              <ul class="dropdown-menu">
+                {categories.map(cat => (
+                  <li>
+                    <a class="dropdown-item" href={`/blog/categoria/${cat.slug}`}>
+                      {cat.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          
+          <div class="row">
+            {recentPosts.map(post => (
+              <div class="col-md-6 mb-4">
+                <BlogCard post={post} />
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+          <div class="sidebar sticky-top">
+            <!-- Search -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <h5>Buscar</h5>
+                <input 
+                  type="search" 
+                  class="form-control" 
+                  placeholder="Buscar artículos..."
+                />
+              </div>
+            </div>
+            
+            <!-- Categories -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <h5>Categorías</h5>
+                <ul class="list-unstyled">
+                  {categories.map(cat => (
+                    <li>
+                      <a href={`/blog/categoria/${cat.slug}`}>{cat.name}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            
+            <!-- Newsletter Signup -->
+            <div class="card bg-success text-white">
+              <div class="card-body">
+                <h5>Boletín de Noticias</h5>
+                <p class="small">Recibe las últimas noticias del zoológico</p>
+                <form>
+                  <input 
+                    type="email" 
+                    class="form-control mb-2" 
+                    placeholder="Tu email"
+                  />
+                  <button type="submit" class="btn btn-light w-100">
+                    Suscribirse
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+```
+</CodeGroup>
+
+## Blog Post Component
+
+<CodeGroup>
+```astro src/components/BlogCard.astro
+---
+interface Props {
+  post: any;
+  featured?: boolean;
+}
+
+const { post, featured = false } = Astro.props;
+const { title, description, publishDate, category, featuredImage, readTime } = post.data;
+
+const formattedDate = publishDate.toLocaleDateString('es-DO', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+---
+
+<article class={`blog-card ${featured ? 'featured' : ''}`}>
+  <a href={`/blog/${post.slug}`} class="card h-100 text-decoration-none">
+    <img src={featuredImage} class="card-img-top" alt={title} />
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="badge bg-success">{category}</span>
+        {readTime && (
+          <small class="text-muted">
+            <i class="bi bi-clock"></i> {readTime} min
+          </small>
+        )}
+      </div>
+      <h3 class="card-title h5">{title}</h3>
+      <p class="card-text text-muted">{description}</p>
+    </div>
+    <div class="card-footer bg-transparent">
+      <small class="text-muted">{formattedDate}</small>
+    </div>
+  </a>
+</article>
+
+<style>
+  .blog-card {
+    transition: transform 0.3s ease;
+  }
+  
+  .blog-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card-img-top {
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .featured .card-img-top {
+    height: 300px;
+  }
+</style>
+```
+</CodeGroup>
+
+## Blog Post Detail Page
+
+<CodeGroup>
+```astro src/pages/blog/[slug].astro
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const {
+  title,
+  description,
+  author,
+  authorRole,
+  publishDate,
+  category,
+  tags,
+  featuredImage,
+  readTime
+} = entry.data;
+
+const formattedDate = publishDate.toLocaleDateString('es-DO', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+// Get related posts
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts
+  .filter(post => 
+    post.slug !== entry.slug && 
+    post.data.category === category
+  )
+  .slice(0, 3);
+---
+
+<Layout>
+  <article>
+    <!-- Hero -->
+    <header class="blog-header">
+      <img src={featuredImage} alt={title} class="w-100" />
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 text-center py-5">
+            <span class="badge bg-success mb-3">{category}</span>
+            <h1 class="display-4">{title}</h1>
+            <p class="lead">{description}</p>
+            <div class="d-flex justify-content-center align-items-center gap-3 text-muted">
+              <span>
+                <i class="bi bi-person"></i> {author}
+                {authorRole && ` - ${authorRole}`}
+              </span>
+              <span>|</span>
+              <span>
+                <i class="bi bi-calendar"></i> {formattedDate}
+              </span>
+              {readTime && (
+                <>
+                  <span>|</span>
+                  <span>
+                    <i class="bi bi-clock"></i> {readTime} min de lectura
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Content -->
+    <section class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="blog-content">
+            <Content />
+          </div>
+          
+          <!-- Tags -->
+          {tags && tags.length > 0 && (
+            <div class="tags mt-5">
+              <h5>Etiquetas:</h5>
+              {tags.map(tag => (
+                <a href={`/blog/etiqueta/${tag}`} class="badge bg-light text-dark me-2">
+                  #{tag}
+                </a>
+              ))}
+            </div>
+          )}
+          
+          <!-- Share Buttons -->
+          <div class="share-buttons mt-4">
+            <h5>Compartir:</h5>
+            <div class="d-flex gap-2">
+              <a href={`https://facebook.com/sharer.php?u=${Astro.url}`} 
+                 class="btn btn-outline-primary btn-sm"
+                 target="_blank">
+                <i class="bi bi-facebook"></i> Facebook
+              </a>
+              <a href={`https://twitter.com/intent/tweet?url=${Astro.url}&text=${title}`}
+                 class="btn btn-outline-info btn-sm"
+                 target="_blank">
+                <i class="bi bi-twitter"></i> Twitter
+              </a>
+              <a href={`https://wa.me/?text=${title} ${Astro.url}`}
+                 class="btn btn-outline-success btn-sm"
+                 target="_blank">
+                <i class="bi bi-whatsapp"></i> WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Related Posts -->
+    {relatedPosts.length > 0 && (
+      <section class="bg-light py-5">
+        <div class="container">
+          <h3 class="mb-4">Artículos Relacionados</h3>
+          <div class="row">
+            {relatedPosts.map(post => (
+              <div class="col-md-4">
+                <BlogCard post={post} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+  </article>
+</Layout>
+
+<style>
+  .blog-header img {
+    max-height: 500px;
+    object-fit: cover;
+  }
+  
+  .blog-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+  
+  .blog-content :global(img) {
+    border-radius: 8px;
+    margin: 2rem 0;
+  }
+  
+  .blog-content :global(h2) {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+</style>
+```
+</CodeGroup>
+
+## Additional Features
+
+<AccordionGroup>
+  <Accordion title="Comments System">
+    Integrate a commenting system like Disqus or build a custom solution:
+    
+    ```astro
+    <div class="comments-section mt-5">
+      <h3>Comentarios</h3>
+      <div id="disqus_thread"></div>
+      <script>
+        var disqus_config = function () {
+          this.page.url = window.location.href;
+          this.page.identifier = '{entry.slug}';
+        };
+      </script>
+    </div>
+    ```
+  </Accordion>
+  
+  <Accordion title="RSS Feed">
+    Generate an RSS feed for blog subscribers:
+    
+    ```typescript
+    // src/pages/blog/rss.xml.ts
+    import rss from '@astrojs/rss';
+    import { getCollection } from 'astro:content';
+    
+    export async function GET(context) {
+      const blog = await getCollection('blog');
+      return rss({
+        title: 'ZOODOM Blog',
+        description: 'Noticias y actualizaciones del Parque Zoológico Nacional',
+        site: context.site,
+        items: blog.map((post) => ({
+          title: post.data.title,
+          pubDate: post.data.publishDate,
+          description: post.data.description,
+          link: `/blog/${post.slug}/`,
+        })),
+      });
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Author Pages">
+    Create dedicated pages for each author showing their posts
+  </Accordion>
+  
+  <Accordion title="Reading Progress Bar">
+    Visual indicator showing reading progress:
+    
+    ```javascript
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - 
+                     document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progressBar').style.width = scrolled + '%';
+    });
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Content Management
+
+<Note>
+  For non-technical staff to manage blog content, consider integrating a CMS like Decap CMS (formerly Netlify CMS) or Tina CMS.
+</Note>
+
+**CMS Integration Benefits:**
+- Visual editor for content creation
+- Media library for image management
+- Editorial workflow with drafts and publishing
+- Multiple user roles and permissions
+- Preview before publishing
+
+## SEO Optimization
+
+Each blog post should include comprehensive meta tags:
+
+```astro
+<Head
+  title={`${title} - Blog ZOODOM`}
+  description={description}
+  image={featuredImage}
+  canonicalUrl={`https://zoodomi.netlify.app/blog/${entry.slug}`}
+/>
+```
+
+**Additional SEO Elements:**
+- Schema.org Article markup
+- Open Graph tags for social sharing
+- Twitter Cards
+- Sitemap inclusion
+- Internal linking between related posts

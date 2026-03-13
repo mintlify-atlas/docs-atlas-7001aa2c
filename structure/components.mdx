@@ -1,0 +1,403 @@
+---
+title: 'Components'
+description: 'Reusable Astro components in the ZOODOM project'
+icon: 'puzzle-piece'
+---
+
+## Overview
+
+Components in Astro are reusable pieces of UI that can be imported and used across multiple pages. ZOODOM currently has one essential component: the **Head** component.
+
+## Component Directory
+
+```
+src/components/
+└── Head.astro    → SEO and meta tag management
+```
+
+## Head Component
+
+The `Head.astro` component is responsible for managing all HTML `<head>` elements, including SEO metadata, social media tags, and global styles.
+
+### Location
+
+```
+src/components/Head.astro
+```
+
+### Purpose
+
+<CardGroup cols={2}>
+  <Card title="SEO Optimization" icon="search">
+    Meta tags for search engine indexing
+  </Card>
+  
+  <Card title="Social Sharing" icon="share-nodes">
+    Open Graph tags for social media previews
+  </Card>
+  
+  <Card title="Global Styles" icon="palette">
+    Import global CSS and fonts
+  </Card>
+  
+  <Card title="Customization" icon="sliders">
+    Configurable props for each page
+  </Card>
+</CardGroup>
+
+## Component Interface
+
+The Head component accepts four optional props:
+
+```typescript src/components/Head.astro
+interface Props {
+    title?: string;
+    description?: string;
+    canonicalUrl?: string;
+    image?: string;
+}
+```
+
+### Default Values
+
+```typescript src/components/Head.astro
+const {
+    title = 'ZOODOM - Parque Zoológico Nacional',
+    description = 'ZOODOM - Parque Zoológico Nacional. Descubre la fauna y flora en nuestro zoológico.',
+    canonicalUrl = 'https://zoodomi.netlify.app',
+    image = '/cover.png',
+} = Astro.props;
+```
+
+<Info>
+  All props have sensible defaults, so you can use the component without passing any props for standard pages.
+</Info>
+
+## Meta Tags Implementation
+
+The component generates comprehensive meta tags:
+
+<Tabs>
+  <Tab title="General Meta">
+    ```html
+    <!-- Meta generales -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="keywords" content="zoo, zoológico, animales, naturaleza, parque, rd" />
+    <meta name="author" content="Ronald Santana" />
+    ```
+    
+    **Includes:**
+    - Character encoding (UTF-8)
+    - Responsive viewport settings
+    - Page description
+    - SEO keywords
+    - Author information
+  </Tab>
+  
+  <Tab title="Title & Links">
+    ```html
+    <!-- Titulo -->
+    <title>{title}</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/src/assets/main.css" />
+    
+    <!-- Fuentes -->
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" rel="stylesheet">
+    ```
+    
+    **Includes:**
+    - Dynamic page title
+    - Canonical URL for SEO
+    - Google Fonts (Onest family)
+    - Font preconnect for performance
+  </Tab>
+  
+  <Tab title="Open Graph">
+    ```html
+    <!-- Meta de Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_DO" />
+    <meta property="og:site_name" content="ZOODOM" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Portada de ZOODOM - Parque Zoológico Nacional" />
+    ```
+    
+    **Includes:**
+    - Open Graph protocol tags
+    - Social media preview information
+    - Locale set to Spanish (Dominican Republic)
+    - Optimized image dimensions (1200x630)
+  </Tab>
+</Tabs>
+
+## Global CSS Import
+
+The component imports the global stylesheet:
+
+```astro src/components/Head.astro
+---
+import '../assets/global.css';
+---
+```
+
+<Check>
+  This ensures the design system and CSS variables are available throughout the entire application.
+</Check>
+
+## Social Image URL
+
+The component generates a fully qualified URL for social media images:
+
+```typescript src/components/Head.astro
+const socialImageUrl = new URL(image, canonicalUrl).href;
+```
+
+This ensures the image URL is absolute, which is required by Open Graph protocols.
+
+## Usage Example
+
+### Default Usage
+
+Use without props for default metadata:
+
+```astro
+---
+import Head from '../components/Head.astro';
+---
+
+<html>
+  <head>
+    <Head />
+  </head>
+  <body>
+    <!-- Page content -->
+  </body>
+</html>
+```
+
+### Custom Metadata
+
+Override defaults with custom props:
+
+```astro
+---
+import Head from '../components/Head.astro';
+---
+
+<html>
+  <head>
+    <Head 
+      title="Especies - ZOODOM"
+      description="Explora las diferentes especies de animales en nuestro zoológico"
+      canonicalUrl="https://zoodomi.netlify.app/especies"
+      image="/especies-cover.png"
+    />
+  </head>
+  <body>
+    <!-- Page content -->
+  </body>
+</html>
+```
+
+<Note>
+  The Layout component already includes the Head component, so you typically don't need to import it directly in pages.
+</Note>
+
+## Complete Code
+
+<Accordion title="View complete Head.astro component">
+```astro src/components/Head.astro
+---
+import '../assets/global.css';
+interface Props {
+    title?: string;
+    description?: string;
+    canonicalUrl?: string;
+    image?: string;
+}
+
+const {
+    title = 'ZOODOM - Parque Zoológico Nacional',
+    description = 'ZOODOM - Parque Zoológico Nacional. Descubre la fauna y flora en nuestro zoológico.',
+    canonicalUrl = 'https://zoodomi.netlify.app',
+    image = '/cover.png',
+} = Astro.props;
+
+const socialImageUrl = new URL(image, canonicalUrl).href;
+---
+
+<!-- Meta generales -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<meta name="description" content={description} />
+<meta name="keywords" content="zoo, zoológico, animales, naturaleza, parque, rd" />
+<meta name="author" content="Ronald Santana" />
+<!-- Titulo -->
+<title>{title}</title>
+<!-- CSS -->
+<link rel="stylesheet" href="/src/assets/main.css" />
+<!-- Fuentes -->
+<link rel="canonical" href={canonicalUrl} />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" rel="stylesheet">
+<!-- Meta de Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="es_DO" />
+<meta property="og:site_name" content="ZOODOM" />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={socialImageUrl} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Portada de ZOODOM - Parque Zoológico Nacional" />
+```
+</Accordion>
+
+## Creating New Components
+
+To add more components to ZOODOM:
+
+<Steps>
+  <Step title="Create a new .astro file">
+    Add your component in `src/components/`. For example, `Footer.astro`.
+  </Step>
+  
+  <Step title="Define the component interface">
+    ```astro
+    ---
+    interface Props {
+      // Define your props here
+    }
+    const { /* props */ } = Astro.props;
+    ---
+    ```
+  </Step>
+  
+  <Step title="Write the component markup">
+    ```astro
+    <footer>
+      <!-- Your component HTML -->
+    </footer>
+    ```
+  </Step>
+  
+  <Step title="Import and use in pages or layouts">
+    ```astro
+    ---
+    import Footer from '../components/Footer.astro';
+    ---
+    
+    <Footer />
+    ```
+  </Step>
+</Steps>
+
+## Component Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Single Responsibility" icon="bullseye">
+    Each component should have one clear purpose (like Head for metadata)
+  </Card>
+  
+  <Card title="Props with Defaults" icon="gear">
+    Provide sensible default values for optional props
+  </Card>
+  
+  <Card title="TypeScript Interfaces" icon="code">
+    Define Props interfaces for type safety and documentation
+  </Card>
+  
+  <Card title="Reusability" icon="recycle">
+    Design components to be reusable across multiple pages
+  </Card>
+</CardGroup>
+
+## Suggested Components
+
+Consider creating these components to expand ZOODOM:
+
+<AccordionGroup>
+  <Accordion title="Navbar.astro">
+    Extract the navigation bar from `index.astro` into a reusable component
+    
+    ```astro
+    ---
+    interface Props {
+      activePage?: string;
+    }
+    ---
+    
+    <nav class="navbar navbar-expand-lg">
+      <!-- Navbar content -->
+    </nav>
+    ```
+  </Accordion>
+  
+  <Accordion title="Footer.astro">
+    Create a footer component with contact info and social links
+    
+    ```astro
+    <footer>
+      <section class="container">
+        <!-- Footer content -->
+      </section>
+    </footer>
+    ```
+  </Accordion>
+  
+  <Accordion title="AnimalCard.astro">
+    Component for displaying animal species information
+    
+    ```astro
+    ---
+    interface Props {
+      name: string;
+      image: string;
+      description: string;
+    }
+    ---
+    
+    <article class="animal-card">
+      <!-- Card content -->
+    </article>
+    ```
+  </Accordion>
+  
+  <Accordion title="Hero.astro">
+    Reusable hero section with customizable content
+    
+    ```astro
+    ---
+    interface Props {
+      title: string;
+      subtitle: string;
+      image: string;
+      ctaText?: string;
+    }
+    ---
+    
+    <header class="hero">
+      <!-- Hero content -->
+    </header>
+    ```
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+  **Performance Tip:** Astro components are rendered at build time by default, resulting in zero JavaScript sent to the browser unless you explicitly add client-side interactivity.
+</Tip>

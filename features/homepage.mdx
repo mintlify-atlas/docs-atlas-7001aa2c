@@ -1,0 +1,270 @@
+---
+title: Homepage
+description: The main landing page of ZOODOM featuring hero section, navigation, and Bootstrap components
+---
+
+The ZOODOM homepage serves as the main entry point for visitors, featuring a welcoming hero section with a call-to-action for reservations.
+
+## Overview
+
+The homepage is built with Astro and Bootstrap 5.3.8, providing a responsive and modern user experience. It introduces visitors to the national zoo park and encourages them to plan a family visit.
+
+## Current Implementation
+
+The homepage is located at `src/pages/index.astro` and includes:
+
+### Navigation Bar
+
+A responsive Bootstrap navbar with links to main sections:
+
+<CodeGroup>
+```astro src/pages/index.astro
+<nav class="navbar navbar-expand-lg">
+  <section class="container px-5 py-4">
+    <a class="navbar-brand" href="#">
+      <img src={logo.src} class="logo" alt="">
+    </a>
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-4">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Especies</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Galeria</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Blog</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Contacto</a>
+      </li>
+    </ul>
+  </section>
+</nav>
+```
+</CodeGroup>
+
+**Navigation Links:**
+- **Inicio** - Homepage (active)
+- **Especies** - Species catalog (planned)
+- **Galeria** - Photo gallery (planned)
+- **Blog** - News and articles (planned)
+- **Contacto** - Contact information (planned)
+
+### Hero Section
+
+The hero section welcomes visitors with a compelling message and reservation button:
+
+<CodeGroup>
+```astro src/pages/index.astro
+<header class="overflow-hidden">
+  <section class="container px-4 px-lg-5 py-5 my-5">
+    <section class="row d-flex justify-content-between align-items-center">
+      <section class="col-lg-6 col-md-6 col-12">
+        <h1>Bienvenido a nuestro zoológico</h1>
+        <p>Planea una salida en familia a nuestro parque zoológico nacional 
+           para que te diviertas en una esperiencia innovidable.</p>
+        <button class="btn btn-success px-5 py-2 rounded-pill">
+          Reservar ahora
+        </button>
+      </section>
+      <section class="col-lg-6 col-md-6 col-12 position-relative">
+        <img src={HeroImg.src} class="img-fluid position-absolute" 
+             alt="Hero Image">
+      </section>
+    </section>
+  </section>
+</header>
+```
+</CodeGroup>
+
+**Hero Content:**
+- Welcoming headline in Spanish
+- Descriptive text encouraging family visits
+- Prominent "Reservar ahora" (Book Now) CTA button
+- Hero image positioned on the right side
+
+## Design System
+
+The homepage uses a custom design system defined in `src/assets/global.css`:
+
+### Color Palette
+
+<CardGroup cols={2}>
+  <Card title="Brand Green" icon="palette">
+    Primary colors ranging from green-900 (#144A1F) to green-50 (#F4FFF6)
+  </Card>
+  <Card title="Accent Green" icon="sparkles">
+    Secondary colors from accent-green-900 (#2E4F19) to accent-green-50 (#F7FFF3)
+  </Card>
+  <Card title="Extended Colors" icon="swatchbook">
+    Blue, yellow, orange, and red variants for special use cases
+  </Card>
+  <Card title="Neutrals" icon="circle">
+    Grayscale from black-900 to gray-50 for text and backgrounds
+  </Card>
+</CardGroup>
+
+### Typography
+
+```css
+html, body {
+  font-family: 'Onest', sans-serif;
+  background-color: var(--color-neutral-white-900);
+  color: var(--color-neutral-black-900);
+}
+
+h1 {
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--color-neutral-black-900);
+}
+
+p {
+  font-size: 18px;
+  color: var(--color-neutral-gray-900);
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+```
+
+## Layout Structure
+
+The homepage uses a shared Layout component (`src/layouts/Layout.astro`):
+
+<Steps>
+  <Step title="HTML Structure">
+    Standard HTML5 document with Spanish language attribute (`lang="es"`)
+  </Step>
+  
+  <Step title="Head Component">
+    Includes meta tags, SEO optimization, Open Graph tags, and custom CSS
+    
+    **Default Meta Values:**
+    - Title: "ZOODOM - Parque Zoológico Nacional"
+    - Description: "Descubre la fauna y flora en nuestro zoológico"
+    - Canonical URL: https://zoodomi.netlify.app
+    - Locale: es_DO (Spanish - Dominican Republic)
+  </Step>
+  
+  <Step title="Bootstrap Integration">
+    Bootstrap 5.3.8 CSS and JS loaded from CDN with integrity checks
+  </Step>
+  
+  <Step title="Custom Styling">
+    Global CSS with custom color variables and Onest font from Google Fonts
+  </Step>
+</Steps>
+
+## Assets
+
+The homepage uses several visual assets:
+
+<CardGroup cols={3}>
+  <Card title="Logo" icon="image">
+    `src/assets/Logo.svg` - Brand logo displayed in navbar (110px width)
+  </Card>
+  <Card title="Hero Image" icon="mountain">
+    `src/assets/hero-img.png` - Main hero section illustration
+  </Card>
+  <Card title="Texture" icon="paint-roller">
+    `src/assets/Texture.png` - Background texture element
+  </Card>
+</CardGroup>
+
+## Responsive Design
+
+Bootstrap's responsive grid system ensures the homepage works across all devices:
+
+- **Desktop (lg):** Two-column layout with text on left, image on right
+- **Tablet (md):** Maintains two-column layout with adjusted spacing
+- **Mobile:** Single column stack with full-width content
+
+<Note>
+  The navbar uses Bootstrap's `.navbar-expand-lg` class to collapse navigation into a hamburger menu on smaller screens (though the toggle button isn't currently implemented in the code).
+</Note>
+
+## Technical Stack
+
+<CardGroup cols={2}>
+  <Card title="Astro" icon="rocket">
+    **Version:** 6.0.4
+    
+    Static site generator with component-based architecture
+  </Card>
+  <Card title="Bootstrap" icon="bootstrap">
+    **Version:** 5.3.8
+    
+    CSS framework for responsive design and components
+  </Card>
+  <Card title="Node.js" icon="node-js">
+    **Version:** >=22.12.0
+    
+    Runtime requirement for development
+  </Card>
+  <Card title="TypeScript" icon="code">
+    Type checking for component props in Head.astro
+  </Card>
+</CardGroup>
+
+## Future Enhancements
+
+<AccordionGroup>
+  <Accordion title="Interactive Reservation System">
+    The "Reservar ahora" button currently doesn't link to a booking system. Future implementation could include:
+    - Date picker for visit scheduling
+    - Ticket quantity selector
+    - Payment integration
+    - Confirmation emails
+  </Accordion>
+  
+  <Accordion title="Mobile Navigation Toggle">
+    Add hamburger menu functionality for mobile devices:
+    ```astro
+    <button class="navbar-toggler" type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    ```
+  </Accordion>
+  
+  <Accordion title="Content Sections">
+    Add additional homepage sections:
+    - Featured animals carousel
+    - Upcoming events preview
+    - Visitor testimonials
+    - Operating hours and admission prices
+  </Accordion>
+  
+  <Accordion title="Animations">
+    Enhance user experience with:
+    - Fade-in effects on scroll
+    - Hover animations on buttons
+    - Smooth scrolling to sections
+  </Accordion>
+</AccordionGroup>
+
+## Development
+
+To run the homepage locally:
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+<Card title="Live Site" icon="globe" href="https://zoodomi.netlify.app">
+  The ZOODOM website is deployed on Netlify
+</Card>

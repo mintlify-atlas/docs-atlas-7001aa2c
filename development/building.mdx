@@ -1,0 +1,205 @@
+---
+title: 'Building'
+description: 'Learn how to build the ZOODOM project for production'
+---
+
+This guide covers the build process for ZOODOM, including commands, output structure, and optimization.
+
+## Build Command
+
+To create a production-ready build of ZOODOM, run:
+
+```bash
+npm run build
+```
+
+This executes the `astro build` command, which:
+
+1. Compiles all `.astro` files
+2. Processes and optimizes CSS
+3. Bundles JavaScript
+4. Optimizes images and assets
+5. Generates static HTML pages
+6. Creates the production-ready output in the `dist/` directory
+
+## Build Output
+
+After a successful build, you'll find the compiled site in the `dist/` directory:
+
+```text
+dist/
+├── _astro/           # Optimized CSS, JS, and hashed assets
+├── assets/           # Processed images and static files
+├── index.html        # Homepage and other HTML pages
+└── favicon.svg       # Favicon and other public assets
+```
+
+<Info>
+  All files in `dist/` are optimized for production and ready to deploy.
+</Info>
+
+## Build Process Details
+
+### Static Site Generation
+
+ZOODOM uses Astro's static site generation (SSG) mode by default. This means:
+
+- All pages are pre-rendered at build time
+- No server runtime is required
+- Pages load instantly with minimal JavaScript
+- Perfect for hosting on CDNs and static hosts like Netlify
+
+### Asset Optimization
+
+During the build, Astro automatically:
+
+- **Minifies CSS and JavaScript** - Reduces file sizes
+- **Generates content hashes** - Files in `_astro/` include hashes for cache busting
+- **Optimizes images** - Compresses images from `src/assets/`
+- **Bundles dependencies** - Combines modules for optimal loading
+
+### TypeScript Compilation
+
+If your project uses TypeScript (configured in `tsconfig.json`):
+
+- TypeScript files are type-checked during build
+- Code is transpiled to JavaScript
+- Type errors will cause the build to fail
+
+## Preview Build Locally
+
+Before deploying, preview your production build locally:
+
+```bash
+npm run preview
+```
+
+This command:
+
+1. Serves the `dist/` directory on a local server
+2. Mimics production environment
+3. Allows you to test the build before deployment
+
+<Tip>
+  Always preview your build locally to catch any production-specific issues before deploying.
+</Tip>
+
+The preview server typically runs on `http://localhost:4321` (or the next available port).
+
+## Build Performance
+
+### Build Times
+
+Typical build times for ZOODOM:
+
+- **Small changes**: 5-15 seconds
+- **Full build**: 30-60 seconds
+
+Build time depends on:
+- Number of pages
+- Size and quantity of images
+- Amount of CSS/JavaScript
+- Your machine's performance
+
+### Caching
+
+Astro caches build artifacts in the `.astro/` directory to speed up subsequent builds. If you experience issues:
+
+```bash
+rm -rf .astro
+npm run build
+```
+
+## Build Configuration
+
+The build is configured in `astro.config.mjs`:
+
+```javascript
+import { defineConfig } from 'astro/config';
+
+export default defineConfig({
+    site: 'https://zoodomi.netlify.app',
+});
+```
+
+### Important Settings
+
+- **`site`**: The production URL where your site will be deployed. This is used for:
+  - Generating absolute URLs
+  - Creating proper canonical links
+  - Sitemap generation
+  - Social media meta tags
+
+## Troubleshooting
+
+### Build Fails with Type Errors
+
+If TypeScript errors prevent building:
+
+1. Check the error messages in the terminal
+2. Fix type issues in the reported files
+3. Run `npm run build` again
+
+<Warning>
+  Unlike the dev server, the build process will fail on type errors. Ensure all types are correct before building.
+</Warning>
+
+### Out of Memory Errors
+
+If the build process runs out of memory:
+
+```bash
+NODE_OPTIONS="--max-old-space-size=4096" npm run build
+```
+
+This increases Node.js memory limit to 4GB.
+
+### Missing Dependencies
+
+If you see "module not found" errors:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+### Build Succeeds but Site Looks Wrong
+
+If the build completes but the site doesn't look right in preview:
+
+1. Check that asset paths are correct
+2. Verify the `site` URL in `astro.config.mjs`
+3. Clear browser cache
+4. Check browser console for errors
+
+### Large Build Size
+
+If your `dist/` folder is unexpectedly large:
+
+1. Check for large images in `src/assets/` - consider optimizing them
+2. Review dependencies in `package.json` - remove unused packages
+3. Check for accidentally included files
+
+## Build Checklist
+
+Before deploying to production:
+
+<Check>
+  - [ ] Run `npm run build` successfully
+  - [ ] Test with `npm run preview`
+  - [ ] Verify all pages load correctly
+  - [ ] Check responsive design on mobile
+  - [ ] Test all interactive features
+  - [ ] Validate links and navigation
+  - [ ] Review console for errors
+  - [ ] Confirm site URL in `astro.config.mjs`
+</Check>
+
+## Next Steps
+
+Once your build is ready:
+
+- Learn about [deploying to Netlify](/development/deployment)
+- Understand the [project structure](/structure/overview)
+- Explore [styling guidelines](/styling/design-system)

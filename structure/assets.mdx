@@ -1,0 +1,639 @@
+---
+title: 'Assets'
+description: 'Managing images, styles, and static files in ZOODOM'
+icon: 'image'
+---
+
+## Overview
+
+ZOODOM organizes assets into two main locations: the `src/assets/` directory for processed assets and the `public/` directory for static files served directly.
+
+## Asset Directories
+
+```
+src/assets/          → Processed by Astro build pipeline
+├── Logo.svg         → ZOODOM logo (29 KB)
+├── hero-img.png     → Homepage hero image (853 KB)
+├── Texture.png      → Decorative texture (1.5 MB)
+└── global.css       → Global styles and design system
+
+public/              → Served directly without processing
+└── cover.png        → Social media cover image (670 KB)
+```
+
+## Source Assets vs Public Assets
+
+<CardGroup cols={2}>
+  <Card title="src/assets/" icon="wand-magic-sparkles">
+    **Processed Assets**
+    
+    - Optimized during build
+    - Hashed filenames for caching
+    - Import in components
+    - Recommended for images in content
+  </Card>
+  
+  <Card title="public/" icon="globe">
+    **Static Assets**
+    
+    - Served directly, no processing
+    - Keep original filenames
+    - Reference with absolute paths
+    - Good for SEO files, robots.txt, favicons
+  </Card>
+</CardGroup>
+
+## Images
+
+### Logo (Logo.svg)
+
+<Tabs>
+  <Tab title="Details">
+    - **Format:** SVG (Scalable Vector Graphics)
+    - **Size:** 29 KB
+    - **Usage:** Navigation bar branding
+    - **Location:** `src/assets/Logo.svg`
+  </Tab>
+  
+  <Tab title="Usage in Code">
+    ```astro src/pages/index.astro
+    ---
+    import logo from '../assets/logo.svg';
+    ---
+    
+    <a class="navbar-brand" href="#">
+      <img src={logo.src} class="logo" alt="">
+    </a>
+    ```
+    
+    **CSS Styling:**
+    ```css src/assets/global.css
+    .logo {
+        width: 110px;
+        height: auto;
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Why SVG?">
+    **Benefits of SVG logos:**
+    - Scales perfectly at any size
+    - Small file size (29 KB)
+    - Crisp on retina displays
+    - Can be styled with CSS
+    - No pixelation when zoomed
+  </Tab>
+</Tabs>
+
+### Hero Image (hero-img.png)
+
+<Tabs>
+  <Tab title="Details">
+    - **Format:** PNG
+    - **Size:** 853 KB
+    - **Usage:** Homepage hero section
+    - **Location:** `src/assets/hero-img.png`
+    - **Positioning:** Absolutely positioned in layout
+  </Tab>
+  
+  <Tab title="Usage in Code">
+    ```astro src/pages/index.astro
+    ---
+    import HeroImg from '../assets/hero-img.png';
+    ---
+    
+    <section class="col-lg-6 col-md-6 col-12 position-relative">
+      <img src={HeroImg.src} class="img-fluid position-absolute" alt="Hero Image">
+    </section>
+    ```
+    
+    **Bootstrap Classes:**
+    - `img-fluid` - Responsive scaling
+    - `position-absolute` - Absolute positioning
+  </Tab>
+  
+  <Tab title="Optimization">
+    <Warning>
+      **Large File Size:** At 853 KB, this image could be optimized:
+      
+      - Convert to WebP format (50-80% smaller)
+      - Use responsive images with `srcset`
+      - Lazy load below the fold
+      - Compress with tools like TinyPNG
+    </Warning>
+  </Tab>
+</Tabs>
+
+### Texture Image (Texture.png)
+
+<Tabs>
+  <Tab title="Details">
+    - **Format:** PNG
+    - **Size:** 1.5 MB
+    - **Usage:** Decorative background element
+    - **Location:** `src/assets/Texture.png`
+  </Tab>
+  
+  <Tab title="Usage in Code">
+    ```astro src/pages/index.astro
+    ---
+    import Texture from '../assets/texture.png';
+    ---
+    
+    <section id="">
+      <img src={Texture.src} alt="Texture" class="img-fluid">
+      <section class="container">
+      </section>
+    </section>
+    ```
+  </Tab>
+  
+  <Tab title="Optimization">
+    <Warning>
+      **Very Large File:** At 1.5 MB, this is a performance concern:
+      
+      **Recommendations:**
+      - Use as CSS background instead
+      - Convert to WebP or AVIF
+      - Apply aggressive compression
+      - Consider CSS patterns instead
+      - Use `loading="lazy"` attribute
+    </Warning>
+  </Tab>
+</Tabs>
+
+### Cover Image (cover.png)
+
+<Tabs>
+  <Tab title="Details">
+    - **Format:** PNG
+    - **Size:** 670 KB
+    - **Usage:** Open Graph social media preview
+    - **Location:** `public/cover.png`
+    - **Dimensions:** Should be 1200×630 px for optimal social sharing
+  </Tab>
+  
+  <Tab title="Usage in Code">
+    ```astro src/components/Head.astro
+    ---
+    const {
+      image = '/cover.png',
+      canonicalUrl = 'https://zoodomi.netlify.app'
+    } = Astro.props;
+    
+    const socialImageUrl = new URL(image, canonicalUrl).href;
+    ---
+    
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    ```
+  </Tab>
+  
+  <Tab title="Social Media">
+    **Why public/?**
+    
+    Social media crawlers need a direct, unchanging URL. Files in `public/` maintain their paths and aren't processed, making them ideal for:
+    
+    - Open Graph images
+    - Favicons
+    - robots.txt
+    - sitemap.xml
+  </Tab>
+</Tabs>
+
+## Global Stylesheet
+
+### Design System (global.css)
+
+The `global.css` file contains the complete design system with CSS custom properties.
+
+#### Color System
+
+<AccordionGroup>
+  <Accordion title="Brand Green Palette">
+    ```css
+    /* Primary brand colors */
+    --color-brand-green-900: #144A1F;  /* Darkest */
+    --color-brand-green-800: #246C32;
+    --color-brand-green-700: #388E49;
+    --color-brand-green-600: #51B063;
+    --color-brand-green-500: #6DD281;  /* Base */
+    --color-brand-green-400: #8EF4A2;
+    --color-brand-green-300: #ACFFBC;
+    --color-brand-green-200: #C4FFD0;
+    --color-brand-green-100: #DCFFE3;
+    --color-brand-green-50: #F4FFF6;   /* Lightest */
+    ```
+    
+    **Usage:** Primary buttons, brand elements, success states
+  </Accordion>
+  
+  <Accordion title="Accent Green Palette">
+    ```css
+    /* Secondary accent colors */
+    --color-accent-green-900: #2E4F19;
+    --color-accent-green-800: #416C26;
+    --color-accent-green-700: #558936;
+    --color-accent-green-600: #6BA747;
+    --color-accent-green-500: #82C45A;
+    --color-accent-green-400: #9AE16F;
+    --color-accent-green-300: #B3FE87;
+    --color-accent-green-200: #CAFFAB;
+    --color-accent-green-100: #E1FFCF;
+    --color-accent-green-50: #F7FFF3;
+    ```
+    
+    **Usage:** Highlights, hover states, secondary actions
+  </Accordion>
+  
+  <Accordion title="Extended Colors">
+    ```css
+    /* Blue - Information */
+    --color-extended-blue-900: #113E4D;
+    --color-extended-blue-500: #6BD8FC;
+    --color-extended-blue-100: #C4F0FF;
+    
+    /* Yellow - Warnings */
+    --color-extended-yellow-900: #5C4100;
+    --color-extended-yellow-500: #FFB401;
+    --color-extended-yellow-100: #FFEAB8;
+    
+    /* Orange - Attention */
+    --color-extended-orange-900: #5B3700;
+    --color-extended-orange-500: #FE9900;
+    --color-extended-orange-100: #FFE2B7;
+    
+    /* Red - Errors */
+    --color-extended-red-900: #5C0600;
+    --color-extended-red-500: #FF2414;
+    --color-extended-red-100: #FFC1BD;
+    ```
+    
+    **Usage:** Alerts, notifications, status indicators
+  </Accordion>
+  
+  <Accordion title="Neutral Colors">
+    ```css
+    /* Overlay */
+    --color-neutral-overlay-900: #00000077;
+    
+    /* White */
+    --color-neutral-white-900: #FFFFFF;
+    
+    /* Gray Scale */
+    --color-neutral-black-900: #222222;
+    --color-neutral-gray-900: #4B4B4B;
+    --color-neutral-gray-800: #5F5F5F; 
+    --color-neutral-gray-700: #747474;
+    --color-neutral-gray-600: #888888;
+    --color-neutral-gray-500: #9C9C9C;
+    --color-neutral-gray-400: #B1B1B1;
+    --color-neutral-gray-300: #C5C5C5;
+    --color-neutral-gray-200: #DADADA;
+    --color-neutral-gray-100: #EEEEEE;
+    --color-neutral-gray-50: #FFFFFF;
+    ```
+    
+    **Usage:** Text, backgrounds, borders, UI elements
+  </Accordion>
+</AccordionGroup>
+
+#### Typography
+
+```css src/assets/global.css
+html, body {
+    font-family: 'Onest', sans-serif;
+    background-color: var(--color-neutral-white-900);
+    color: var(--color-neutral-black-900);
+}
+
+h1 {
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--color-neutral-black-900);
+}
+
+p {
+    font-size: 18px;
+    color: var(--color-neutral-gray-900);
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+```
+
+<Note>
+  The **Onest** font family is loaded from Google Fonts with variable weights (100-900), providing flexibility for different text hierarchies.
+</Note>
+
+#### Global Resets
+
+```css src/assets/global.css
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+```
+
+**This reset ensures:**
+- Consistent spacing across browsers
+- Predictable box model behavior
+- No unexpected margins or padding
+
+## Asset Import Patterns
+
+### Importing Images in Astro
+
+<CodeGroup>
+```astro Method 1: Direct Import
+---
+import logo from '../assets/logo.svg';
+import heroImg from '../assets/hero-img.png';
+---
+
+<img src={logo.src} alt="Logo" />
+<img src={heroImg.src} alt="Hero" />
+```
+
+```astro Method 2: Import Object
+---
+import * as assets from '../assets/*.{png,svg}';
+---
+
+<img src={assets.logo.src} alt="Logo" />
+```
+
+```astro Method 3: Public Assets
+<!-- No import needed for public/ files -->
+<img src="/cover.png" alt="Cover" />
+```
+</CodeGroup>
+
+### Importing Styles
+
+```astro src/components/Head.astro
+---
+import '../assets/global.css';
+---
+```
+
+<Check>
+  Importing CSS in a component makes it available globally throughout your application.
+</Check>
+
+## Using CSS Variables
+
+Access the design system colors in your styles:
+
+```astro
+<style>
+  .custom-button {
+    background-color: var(--color-brand-green-500);
+    color: var(--color-neutral-white-900);
+    border: 2px solid var(--color-brand-green-700);
+  }
+  
+  .custom-button:hover {
+    background-color: var(--color-brand-green-600);
+  }
+  
+  .error-message {
+    color: var(--color-extended-red-500);
+    background-color: var(--color-extended-red-100);
+  }
+</style>
+```
+
+## Performance Optimization
+
+<Steps>
+  <Step title="Image Optimization">
+    **Current Issues:**
+    - hero-img.png: 853 KB
+    - Texture.png: 1.5 MB
+    - cover.png: 670 KB
+    
+    **Total:** 3 MB of images!
+  </Step>
+  
+  <Step title="Recommended Actions">
+    ```bash
+    # Convert to WebP format
+    npx @squoosh/cli --webp auto hero-img.png
+    npx @squoosh/cli --webp auto Texture.png
+    npx @squoosh/cli --webp auto cover.png
+    ```
+  </Step>
+  
+  <Step title="Add Responsive Images">
+    ```astro
+    <picture>
+      <source srcset={heroImg.src} type="image/webp" />
+      <img src={heroImgFallback.src} alt="Hero Image" />
+    </picture>
+    ```
+  </Step>
+  
+  <Step title="Lazy Loading">
+    ```html
+    <img src={Texture.src} alt="Texture" loading="lazy" />
+    ```
+  </Step>
+</Steps>
+
+## Asset Organization Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use src/assets/ for" icon="wand-sparkles">
+    - Component images
+    - Hero images
+    - Icons and illustrations
+    - CSS/SCSS files
+    - Images that need optimization
+  </Card>
+  
+  <Card title="Use public/ for" icon="folder">
+    - favicon.ico
+    - robots.txt
+    - sitemap.xml
+    - Social media images
+    - Files that need consistent URLs
+  </Card>
+  
+  <Card title="Format Guidelines" icon="image">
+    - **SVG** for logos and icons
+    - **WebP** for photos (with PNG fallback)
+    - **PNG** for images needing transparency
+    - **JPG** for photographs without transparency
+  </Card>
+  
+  <Card title="Naming Conventions" icon="tag">
+    - Use kebab-case: `hero-img.png`
+    - Be descriptive: `animal-card-bg.png`
+    - Include dimensions if multiple sizes: `logo-small.svg`
+  </Card>
+</CardGroup>
+
+## Adding New Assets
+
+<AccordionGroup>
+  <Accordion title="Adding Images">
+    1. **Place file in appropriate directory:**
+       ```bash
+       src/assets/        # For optimized assets
+       public/           # For static assets
+       ```
+    
+    2. **Import in your component:**
+       ```astro
+       ---
+       import myImage from '../assets/my-image.png';
+       ---
+       
+       <img src={myImage.src} alt="Description" />
+       ```
+    
+    3. **Or reference public assets directly:**
+       ```html
+       <img src="/my-static-image.png" alt="Description" />
+       ```
+  </Accordion>
+  
+  <Accordion title="Adding Fonts">
+    **Option 1: Google Fonts (Current method)**
+    ```html src/components/Head.astro
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" rel="stylesheet">
+    ```
+    
+    **Option 2: Self-hosted fonts**
+    ```css
+    @font-face {
+      font-family: 'Onest';
+      src: url('/fonts/Onest-Variable.woff2') format('woff2');
+      font-weight: 100 900;
+      font-display: swap;
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Adding Icons">
+    **Option 1: SVG Icons**
+    ```astro
+    ---
+    import iconSearch from '../assets/icons/search.svg';
+    ---
+    
+    <img src={iconSearch.src} alt="Search" class="icon" />
+    ```
+    
+    **Option 2: Icon Library (recommended)**
+    ```bash
+    npm install @astrojs/icon
+    ```
+    
+    ```astro
+    ---
+    import { Icon } from 'astro-icon';
+    ---
+    
+    <Icon name="mdi:magnify" />
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Complete global.css Reference
+
+<Accordion title="View complete global.css file">
+```css src/assets/global.css
+:root {
+    /* Primitives */
+
+    /* Green */
+    --color-brand-green-900: #144A1F;
+    --color-brand-green-800: #246C32;
+    --color-brand-green-700: #388E49;
+    --color-brand-green-600: #51B063;
+    --color-brand-green-500: #6DD281;
+    --color-brand-green-400: #8EF4A2;
+    --color-brand-green-300: #ACFFBC;
+    --color-brand-green-200: #C4FFD0;
+    --color-brand-green-100: #DCFFE3;
+    --color-brand-green-50: #F4FFF6;
+    /* Accent */
+    --color-accent-green-900: #2E4F19;
+    --color-accent-green-800: #416C26;
+    --color-accent-green-700: #558936;
+    --color-accent-green-600: #6BA747;
+    --color-accent-green-500: #82C45A;
+    --color-accent-green-400: #9AE16F;
+    --color-accent-green-300: #B3FE87;
+    --color-accent-green-200: #CAFFAB;
+    --color-accent-green-100: #E1FFCF;
+    --color-accent-green-50: #F7FFF3;
+    /* Blue */
+    --color-extended-blue-900: #113E4D;
+    --color-extended-blue-500: #6BD8FC;
+    --color-extended-blue-100: #C4F0FF;
+    /* yellow */
+    --color-extended-yellow-900: #5C4100;
+    --color-extended-yellow-500: #FFB401;
+    --color-extended-yellow-100: #FFEAB8;
+    /* orange */
+    --color-extended-orange-900: #5B3700;
+    --color-extended-orange-500: #FE9900;
+    --color-extended-orange-100: #FFE2B7;
+    /* Red */
+    --color-extended-red-900: #5C0600;
+    --color-extended-red-500: #FF2414;
+    --color-extended-red-100: #FFC1BD;
+    /* black */
+    --color-neutral-overlay-900: #00000077;
+    /* White */
+    --color-neutral-white-900: #FFFFFF;
+    /* Gray */
+    --color-neutral-black-900: #222222;
+    --color-neutral-gray-900: #4B4B4B;
+    --color-neutral-gray-800: #5F5F5F; 
+    --color-neutral-gray-700: #747474;
+    --color-neutral-gray-600: #888888;
+    --color-neutral-gray-500: #9C9C9C;
+    --color-neutral-gray-400: #B1B1B1;
+    --color-neutral-gray-300: #C5C5C5;
+    --color-neutral-gray-200: #DADADA;
+    --color-neutral-gray-100: #EEEEEE;
+    --color-neutral-gray-50: #FFFFFF;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body {
+    font-family: 'Onest', sans-serif;
+    background-color: var(--color-neutral-white-900);
+    color: var(--color-neutral-black-900);
+}
+.logo {
+    width: 110px;
+    height: auto;
+}
+h1 {
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--color-neutral-black-900);
+}
+p {
+    font-size: 18px;
+    color: var(--color-neutral-gray-900);
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+```
+</Accordion>
+
+<Tip>
+  **Design System Tip:** The comprehensive color system with 10 shades per color provides excellent flexibility for creating visual hierarchy and interactive states.
+</Tip>

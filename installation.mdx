@@ -1,0 +1,484 @@
+---
+title: Installation
+description: Complete installation guide for the ZOODOM project
+---
+
+This guide covers everything you need to install and configure ZOODOM for local development or production deployment.
+
+## System Requirements
+
+### Required Software
+
+<AccordionGroup>
+  <Accordion title="Node.js >= 22.12.0">
+    ZOODOM requires Node.js version 22.12.0 or higher as specified in `package.json`:
+
+    ```json package.json
+    "engines": {
+      "node": ">=22.12.0"
+    }
+    ```
+
+    **Installation:**
+    - Download from [nodejs.org](https://nodejs.org/)
+    - Or use a version manager like [nvm](https://github.com/nvm-sh/nvm):
+      ```bash
+      nvm install 22.12.0
+      nvm use 22.12.0
+      ```
+
+    **Verify installation:**
+    ```bash
+    node --version
+    # Should output v22.12.0 or higher
+    ```
+  </Accordion>
+
+  <Accordion title="npm Package Manager">
+    npm comes bundled with Node.js. Verify you have npm installed:
+
+    ```bash
+    npm --version
+    ```
+
+    Update npm to the latest version if needed:
+    ```bash
+    npm install -g npm@latest
+    ```
+  </Accordion>
+
+  <Accordion title="Git Version Control">
+    Required for cloning the repository and version control.
+
+    **Installation:**
+    - Windows: [git-scm.com](https://git-scm.com/)
+    - macOS: `brew install git` or Xcode Command Line Tools
+    - Linux: `sudo apt install git` or `sudo yum install git`
+
+    **Verify installation:**
+    ```bash
+    git --version
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Recommended Tools
+
+- **Code Editor**: VS Code with Astro extension
+- **Browser**: Modern browser with DevTools (Chrome, Firefox, Edge, Safari)
+- **Terminal**: Any modern terminal (integrated terminal in VS Code works great)
+
+## Installation Steps
+
+<Steps>
+  <Step title="Clone the Repository">
+    Get the source code from your repository:
+
+    ```bash
+    git clone <repository-url>
+    cd zoodom
+    ```
+
+    This will create a `zoodom` directory with all project files.
+  </Step>
+
+  <Step title="Install Dependencies">
+    Install all required npm packages:
+
+    ```bash
+    npm install
+    ```
+
+    This installs the dependencies defined in `package.json`:
+
+    ```json package.json
+    "dependencies": {
+      "astro": "^6.0.4"
+    }
+    ```
+
+    <Note>
+    The installation downloads Astro and its peer dependencies. Bootstrap is loaded via CDN, so it's not in the dependencies list.
+    </Note>
+  </Step>
+
+  <Step title="Verify Installation">
+    Check that everything installed correctly:
+
+    ```bash
+    npm run astro -- --version
+    ```
+
+    This should output the Astro version (6.0.4 or compatible).
+  </Step>
+
+  <Step title="Start Development Server">
+    Launch the local development server:
+
+    ```bash
+    npm run dev
+    ```
+
+    Expected output:
+    ```
+    🚀 astro v6.0.4 started in XXms
+
+    ┃ Local    http://localhost:4321/
+    ┃ Network  use --host to expose
+    ```
+  </Step>
+
+  <Step title="Access the Application">
+    Open your browser and navigate to:
+
+    ```
+    http://localhost:4321
+    ```
+
+    You should see the ZOODOM homepage.
+  </Step>
+</Steps>
+
+## Configuration
+
+### Astro Configuration
+
+The project configuration is defined in `astro.config.mjs`:
+
+```javascript astro.config.mjs
+// @ts-check
+import { defineConfig } from 'astro/config';
+
+// https://astro.build/config
+export default defineConfig({
+    site: 'https://zoodomi.netlify.app',
+});
+```
+
+<ParamField path="site" type="string" default="https://zoodomi.netlify.app">
+  The production URL of your site. Used for generating canonical URLs and sitemaps.
+</ParamField>
+
+### TypeScript Configuration
+
+ZOODOM uses TypeScript with Astro's strict configuration:
+
+```json tsconfig.json
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}
+```
+
+This provides type safety for:
+- Astro components (`.astro` files)
+- Component props and interfaces
+- Asset imports
+
+### Bootstrap CDN
+
+Bootstrap 5.3.8 is loaded via CDN in the Layout component. The configuration includes:
+
+<CodeGroup>
+
+```astro CSS
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+  crossorigin="anonymous"
+/>
+```
+
+```astro JavaScript
+<script
+  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+  integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+  crossorigin="anonymous"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+  integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
+  crossorigin="anonymous"></script>
+```
+
+</CodeGroup>
+
+### SEO and Meta Tags
+
+The Head component (`src/components/Head.astro`) provides comprehensive SEO configuration:
+
+```typescript src/components/Head.astro
+interface Props {
+    title?: string;
+    description?: string;
+    canonicalUrl?: string;
+    image?: string;
+}
+
+const {
+    title = 'ZOODOM - Parque Zoológico Nacional',
+    description = 'ZOODOM - Parque Zoológico Nacional. Descubre la fauna y flora en nuestro zoológico.',
+    canonicalUrl = 'https://zoodomi.netlify.app',
+    image = '/cover.png',
+} = Astro.props;
+```
+
+Features:
+- Open Graph tags for social media sharing
+- Meta description and keywords for SEO
+- Canonical URLs
+- Spanish language optimization (`lang="es"`, `og:locale="es_DO"`)
+- Google Fonts integration (Onest font family)
+
+## Building for Production
+
+### Build Command
+
+Create an optimized production build:
+
+```bash
+npm run build
+```
+
+This command:
+1. Compiles all `.astro` files to static HTML
+2. Optimizes images and assets
+3. Generates static files in the `./dist` directory
+4. Creates a production-ready bundle
+
+### Preview Build Locally
+
+Test the production build before deploying:
+
+```bash
+npm run preview
+```
+
+This serves the `dist` folder locally, allowing you to verify the production build.
+
+### Deployment to Netlify
+
+ZOODOM is configured for deployment on Netlify at https://zoodomi.netlify.app
+
+**Build settings:**
+- **Build command**: `npm run build`
+- **Publish directory**: `dist`
+- **Node version**: 22.12.0 or higher
+
+<Note>
+Netlify automatically detects Astro projects and applies optimal build settings. No additional configuration file is needed.
+</Note>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Error: Node version is too old">
+    **Problem**: You're running an older version of Node.js
+
+    **Solution**: Upgrade to Node.js 22.12.0 or higher:
+    ```bash
+    # Using nvm
+    nvm install 22.12.0
+    nvm use 22.12.0
+
+    # Or download from nodejs.org
+    ```
+
+    Verify the version:
+    ```bash
+    node --version
+    ```
+  </Accordion>
+
+  <Accordion title="Error: npm install fails">
+    **Problem**: Dependency installation errors
+
+    **Solutions**:
+
+    1. Clear npm cache:
+    ```bash
+    npm cache clean --force
+    rm -rf node_modules package-lock.json
+    npm install
+    ```
+
+    2. Check your npm version:
+    ```bash
+    npm --version
+    npm install -g npm@latest
+    ```
+
+    3. Verify you have sufficient disk space and permissions
+  </Accordion>
+
+  <Accordion title="Error: Port 4321 already in use">
+    **Problem**: Another service is using port 4321
+
+    **Solutions**:
+
+    1. Use a different port:
+    ```bash
+    npm run dev -- --port 3000
+    ```
+
+    2. Kill the process using port 4321:
+    ```bash
+    # On macOS/Linux
+    lsof -ti:4321 | xargs kill -9
+
+    # On Windows
+    netstat -ano | findstr :4321
+    taskkill /PID <PID> /F
+    ```
+  </Accordion>
+
+  <Accordion title="Images not loading">
+    **Problem**: Images in `src/assets/` not displaying
+
+    **Solution**: Astro requires importing images in `.astro` files:
+
+    ```astro
+    ---
+    import logo from '../assets/Logo.svg';
+    import HeroImg from '../assets/hero-img.png';
+    ---
+
+    <img src={logo.src} alt="ZOODOM Logo">
+    <img src={HeroImg.src} alt="Hero Image">
+    ```
+
+    Static files in the `public/` directory can be referenced directly:
+    ```html
+    <img src="/cover.png" alt="Cover">
+    ```
+  </Accordion>
+
+  <Accordion title="CSS styles not applying">
+    **Problem**: Custom styles from `global.css` not working
+
+    **Solution**: Ensure global.css is imported in the Head component:
+
+    ```astro src/components/Head.astro
+    ---
+    import '../assets/global.css';
+    ---
+    ```
+
+    The global.css file defines CSS custom properties (variables) that must be loaded to use the design system colors.
+  </Accordion>
+
+  <Accordion title="Bootstrap components not working">
+    **Problem**: Bootstrap JavaScript features (modals, dropdowns) not functioning
+
+    **Solution**: Verify all Bootstrap scripts are loaded in the Layout component:
+
+    ```astro src/layouts/Layout.astro
+    <!-- Popper.js (required for Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Custom Styling System
+
+ZOODOM uses a custom CSS design system defined in `src/assets/global.css` with nature-inspired color palettes:
+
+### Color Variables
+
+<CodeGroup>
+
+```css Brand Green
+/* Primary zoo theme colors */
+--color-brand-green-900: #144A1F;  /* Darkest */
+--color-brand-green-800: #246C32;
+--color-brand-green-700: #388E49;
+--color-brand-green-600: #51B063;
+--color-brand-green-500: #6DD281;
+--color-brand-green-400: #8EF4A2;
+--color-brand-green-300: #ACFFBC;
+--color-brand-green-200: #C4FFD0;
+--color-brand-green-100: #DCFFE3;
+--color-brand-green-50: #F4FFF6;   /* Lightest */
+```
+
+```css Accent Green
+/* Secondary nature tones */
+--color-accent-green-900: #2E4F19;
+--color-accent-green-800: #416C26;
+--color-accent-green-700: #558936;
+--color-accent-green-600: #6BA747;
+--color-accent-green-500: #82C45A;
+--color-accent-green-400: #9AE16F;
+--color-accent-green-300: #B3FE87;
+--color-accent-green-200: #CAFFAB;
+--color-accent-green-100: #E1FFCF;
+--color-accent-green-50: #F7FFF3;
+```
+
+```css Extended Colors
+/* Blue, Yellow, Orange, Red accents */
+--color-extended-blue-900: #113E4D;
+--color-extended-blue-500: #6BD8FC;
+--color-extended-blue-100: #C4F0FF;
+
+--color-extended-yellow-900: #5C4100;
+--color-extended-yellow-500: #FFB401;
+--color-extended-yellow-100: #FFEAB8;
+
+--color-extended-orange-900: #5B3700;
+--color-extended-orange-500: #FE9900;
+--color-extended-orange-100: #FFE2B7;
+
+--color-extended-red-900: #5C0600;
+--color-extended-red-500: #FF2414;
+--color-extended-red-100: #FFC1BD;
+```
+
+</CodeGroup>
+
+### Typography
+
+The project uses the **Onest** font family from Google Fonts:
+
+```css global.css
+html, body {
+    font-family: 'Onest', sans-serif;
+    background-color: var(--color-neutral-white-900);
+    color: var(--color-neutral-black-900);
+}
+
+h1 {
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--color-neutral-black-900);
+}
+
+p {
+    font-size: 18px;
+    color: var(--color-neutral-gray-900);
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+    Get the site running in under 5 minutes
+  </Card>
+  <Card title="Astro Documentation" icon="book" href="https://docs.astro.build">
+    Learn more about Astro's features and capabilities
+  </Card>
+  <Card title="Bootstrap Docs" icon="bootstrap" href="https://getbootstrap.com/docs/5.3">
+    Explore Bootstrap 5.3 components and utilities
+  </Card>
+  <Card title="Live Site" icon="globe" href="https://zoodomi.netlify.app">
+    View the production deployment
+  </Card>
+</CardGroup>

@@ -1,0 +1,102 @@
+---
+title: Design System
+description: Overview of ZOODOM's design system including colors, typography, and component architecture
+---
+
+ZOODOM uses a comprehensive design system built on modern web standards, combining custom CSS variables with Bootstrap 5.3.8 for a cohesive and maintainable user interface.
+
+## Design Philosophy
+
+The ZOODOM design system emphasizes:
+
+- **Natural aesthetics** - Green color palettes inspired by nature and wildlife
+- **Accessibility** - High contrast ratios and semantic color usage
+- **Consistency** - Reusable design tokens through CSS custom properties
+- **Flexibility** - Bootstrap components enhanced with custom styling
+
+## Core Components
+
+### Color System
+
+The color system includes:
+
+- **Brand Green** (10 shades) - Primary brand colors
+- **Accent Green** (10 shades) - Secondary accent colors
+- **Extended Colors** - Blue, Yellow, Orange, and Red for specific use cases
+- **Neutral Colors** - Comprehensive grayscale and overlay colors
+
+See [Colors](/styling/colors) for the complete palette.
+
+### Typography
+
+The ZOODOM website uses the **Onest** font family from Google Fonts, providing a modern and readable typeface across all content.
+
+See [Typography](/styling/typography) for detailed font specifications.
+
+### Bootstrap Integration
+
+ZOODOM integrates Bootstrap 5.3.8 via CDN, providing a robust component library enhanced with custom styling.
+
+See [Bootstrap Integration](/styling/bootstrap-integration) for implementation details.
+
+## File Structure
+
+The design system is defined in:
+
+```
+src/assets/
+├── global.css          # CSS variables and base styles
+└── main.css            # Additional styles (if any)
+```
+
+## CSS Custom Properties
+
+All colors and design tokens are defined as CSS custom properties in the `:root` selector, making them globally accessible:
+
+```css
+:root {
+  --color-brand-green-500: #6DD281;
+  --color-neutral-black-900: #222222;
+  /* ... more variables */
+}
+```
+
+## Usage Example
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <h1>Welcome to ZOODOM</h1>
+  <p>Explore our amazing wildlife</p>
+  <button class="btn btn-success">Visit Now</button>
+</Layout>
+```
+
+## Base Styles
+
+The design system includes sensible defaults:
+
+```css
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Onest', sans-serif;
+  background-color: var(--color-neutral-white-900);
+  color: var(--color-neutral-black-900);
+}
+```
+
+These ensure consistent spacing and typography across the entire application.
+
+## Next Steps
+
+- Learn about the [color palette](/styling/colors)
+- Explore [typography settings](/styling/typography)
+- Understand [Bootstrap integration](/styling/bootstrap-integration)

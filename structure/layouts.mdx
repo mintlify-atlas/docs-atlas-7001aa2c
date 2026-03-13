@@ -1,0 +1,496 @@
+---
+title: 'Layouts'
+description: 'Understanding the layout system in ZOODOM'
+icon: 'layer-group'
+---
+
+## Overview
+
+Layouts in Astro are special components that provide a consistent HTML structure across multiple pages. ZOODOM uses a single base layout that wraps all pages with common elements.
+
+## Layout Directory
+
+```
+src/layouts/
+└── Layout.astro    → Base layout template
+```
+
+## Base Layout
+
+The `Layout.astro` component serves as the foundation for all pages in ZOODOM.
+
+### Location
+
+```
+src/layouts/Layout.astro
+```
+
+### Purpose
+
+<CardGroup cols={2}>
+  <Card title="HTML Structure" icon="file-code">
+    Provides the base HTML document structure
+  </Card>
+  
+  <Card title="Meta Tags" icon="tags">
+    Includes the Head component for SEO
+  </Card>
+  
+  <Card title="External Libraries" icon="box">
+    Loads Bootstrap CSS and JavaScript
+  </Card>
+  
+  <Card title="Content Slot" icon="square-dashed">
+    Defines where page content is inserted
+  </Card>
+</CardGroup>
+
+## Complete Layout Code
+
+```astro src/layouts/Layout.astro
+---
+import Head from "../components/Head.astro";
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<Head />
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+			crossorigin="anonymous"
+		/>
+	</head>
+	<body>
+		<slot />
+		<script
+			src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+			integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+			crossorigin="anonymous"></script>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+			integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
+			crossorigin="anonymous"></script>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+			crossorigin="anonymous"></script>
+	</body>
+</html>
+```
+
+## Layout Structure Breakdown
+
+<Tabs>
+  <Tab title="HTML Document">
+    ```html
+    <!doctype html>
+    <html lang="es">
+    ```
+    
+    **Key Points:**
+    - Standard HTML5 doctype
+    - Language set to Spanish (`lang="es"`)
+    - Semantic and accessible structure
+  </Tab>
+  
+  <Tab title="Head Section">
+    ```astro
+    <head>
+      <Head />
+      <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+        crossorigin="anonymous"
+      />
+    </head>
+    ```
+    
+    **Includes:**
+    - Head component (meta tags, fonts, global CSS)
+    - Bootstrap 5.3.8 CSS from CDN
+    - Integrity hash for security (SRI)
+  </Tab>
+  
+  <Tab title="Body & Slot">
+    ```astro
+    <body>
+      <slot />
+      <!-- Scripts here -->
+    </body>
+    ```
+    
+    **The `<slot />` element:**
+    - Placeholder where page content is inserted
+    - Each page's content replaces the slot
+    - Allows for consistent wrapper structure
+  </Tab>
+  
+  <Tab title="Scripts">
+    ```html
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" ...></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" ...></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" ...></script>
+    ```
+    
+    **JavaScript Libraries:**
+    - Popper.js (v2.11.8) - For tooltips and popovers
+    - Bootstrap JS (v5.3.8) - Core functionality
+    - Bootstrap Bundle - Includes Popper
+    - All loaded at end of body for performance
+  </Tab>
+</Tabs>
+
+## How Layouts Work
+
+<Steps>
+  <Step title="Page imports Layout">
+    ```astro src/pages/index.astro
+    ---
+    import Layout from '../layouts/Layout.astro';
+    ---
+    ```
+  </Step>
+  
+  <Step title="Page wraps content in Layout">
+    ```astro
+    <Layout>
+      <main>
+        <!-- Page-specific content -->
+      </main>
+    </Layout>
+    ```
+  </Step>
+  
+  <Step title="Layout renders with content">
+    The `<slot />` in Layout.astro is replaced with the page content, creating a complete HTML document.
+  </Step>
+</Steps>
+
+## Visual Representation
+
+<CodeGroup>
+```astro Layout Template
+<!doctype html>
+<html>
+  <head>
+    <Head />
+    <link bootstrap CSS />
+  </head>
+  <body>
+    ┌─────────────────────┐
+    │   <slot />         │  ← Page content inserted here
+    └─────────────────────┘
+    <script bootstrap />
+  </body>
+</html>
+```
+
+```astro Page Using Layout
+<Layout>
+  <main>
+    <nav>...</nav>
+    <header>...</header>
+    <section>...</section>
+  </main>
+</Layout>
+```
+
+```html Final Rendered Output
+<!doctype html>
+<html>
+  <head>
+    <Head />
+    <link bootstrap CSS />
+  </head>
+  <body>
+    <main>
+      <nav>...</nav>
+      <header>...</header>
+      <section>...</section>
+    </main>
+    <script bootstrap />
+  </body>
+</html>
+```
+</CodeGroup>
+
+## Bootstrap Integration
+
+The layout integrates Bootstrap 5.3.8 via CDN:
+
+### CSS (in `<head>`)
+
+```html
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+  crossorigin="anonymous"
+/>
+```
+
+### JavaScript (before `</body>`)
+
+```html
+<!-- Popper.js for positioning -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap core JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+
+<!-- Bootstrap bundle (includes Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+```
+
+<Note>
+  **Note:** The layout includes both `bootstrap.min.js` and `bootstrap.bundle.min.js`. The bundle already includes Popper, so you could remove the standalone files to avoid duplication.
+</Note>
+
+## Benefits of Layouts
+
+<CardGroup cols={2}>
+  <Card title="Consistency" icon="check-double">
+    Ensures all pages have the same base structure and dependencies
+  </Card>
+  
+  <Card title="Maintainability" icon="wrench">
+    Update meta tags or libraries once, affects all pages
+  </Card>
+  
+  <Card title="DRY Principle" icon="code">
+    Don't Repeat Yourself - avoid duplicating HTML structure
+  </Card>
+  
+  <Card title="SEO" icon="chart-line">
+    Consistent meta tags and structure improve search rankings
+  </Card>
+</CardGroup>
+
+## Creating Additional Layouts
+
+You can create specialized layouts for different page types:
+
+<AccordionGroup>
+  <Accordion title="BlogLayout.astro">
+    For blog posts with additional metadata and structure:
+    
+    ```astro src/layouts/BlogLayout.astro
+    ---
+    import Layout from './Layout.astro';
+    
+    interface Props {
+      title: string;
+      author: string;
+      date: string;
+      image: string;
+    }
+    
+    const { title, author, date, image } = Astro.props;
+    ---
+    
+    <Layout>
+      <article class="blog-post">
+        <header>
+          <h1>{title}</h1>
+          <p>Por {author} - {date}</p>
+          <img src={image} alt={title} />
+        </header>
+        <slot />
+      </article>
+    </Layout>
+    ```
+  </Accordion>
+  
+  <Accordion title="DashboardLayout.astro">
+    For admin or dashboard pages with sidebar navigation:
+    
+    ```astro src/layouts/DashboardLayout.astro
+    ---
+    import Layout from './Layout.astro';
+    ---
+    
+    <Layout>
+      <div class="container-fluid">
+        <div class="row">
+          <nav class="col-md-3 sidebar">
+            <!-- Sidebar navigation -->
+          </nav>
+          <main class="col-md-9">
+            <slot />
+          </main>
+        </div>
+      </div>
+    </Layout>
+    ```
+  </Accordion>
+  
+  <Accordion title="MinimalLayout.astro">
+    For landing pages or login screens without navigation:
+    
+    ```astro src/layouts/MinimalLayout.astro
+    ---
+    import Head from '../components/Head.astro';
+    ---
+    
+    <!doctype html>
+    <html lang="es">
+      <head>
+        <Head />
+      </head>
+      <body>
+        <slot />
+      </body>
+    </html>
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Layout Nesting
+
+Layouts can be nested for hierarchical structure:
+
+```astro src/layouts/BlogLayout.astro
+---
+import Layout from './Layout.astro';
+---
+
+<Layout>
+  <article class="blog-post">
+    <slot />
+  </article>
+</Layout>
+```
+
+Then in a blog page:
+
+```astro src/pages/blog/mi-post.astro
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+---
+
+<BlogLayout title="Mi Post" author="Juan" date="2024-03-13">
+  <!-- Blog post content -->
+</BlogLayout>
+```
+
+## Passing Props to Layout
+
+You can make layouts accept props for customization:
+
+```astro src/layouts/Layout.astro
+---
+import Head from "../components/Head.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  includeBootstrap?: boolean;
+}
+
+const { 
+  title, 
+  description, 
+  includeBootstrap = true 
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <Head title={title} description={description} />
+    {includeBootstrap && (
+      <link href="...bootstrap.css" rel="stylesheet" />
+    )}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+```
+
+Usage:
+
+```astro
+<Layout title="Custom Page" includeBootstrap={false}>
+  <!-- Content -->
+</Layout>
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Base Layout" icon="layer-group">
+    Create one base layout that all other layouts extend
+  </Card>
+  
+  <Card title="Props for Flexibility" icon="sliders">
+    Accept props to customize behavior without creating new layouts
+  </Card>
+  
+  <Card title="Scripts at Bottom" icon="arrow-down">
+    Load JavaScript at the end of `<body>` for better performance
+  </Card>
+  
+  <Card title="Semantic HTML" icon="code">
+    Use proper HTML5 elements within layouts
+  </Card>
+</CardGroup>
+
+<Warning>
+  **Script Duplication:** The current layout loads both `bootstrap.min.js` and `bootstrap.bundle.min.js`. Consider removing the standalone files since the bundle includes everything.
+</Warning>
+
+## Optimization Suggestions
+
+<AccordionGroup>
+  <Accordion title="Remove Duplicate Scripts">
+    The bundle version includes Popper.js, so you can simplify to:
+    
+    ```html
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"></script>
+    ```
+  </Accordion>
+  
+  <Accordion title="Add Props for Head Component">
+    Allow pages to customize meta tags through the layout:
+    
+    ```astro
+    ---
+    interface Props {
+      title?: string;
+      description?: string;
+    }
+    const { title, description } = Astro.props;
+    ---
+    
+    <Head title={title} description={description} />
+    ```
+  </Accordion>
+  
+  <Accordion title="Consider Local Bootstrap">
+    For better performance and offline capability, install Bootstrap via npm:
+    
+    ```bash
+    npm install bootstrap
+    ```
+    
+    Then import in your layout:
+    
+    ```astro
+    ---
+    import 'bootstrap/dist/css/bootstrap.min.css';
+    ---
+    ```
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+  **Performance Tip:** Using CDNs for popular libraries like Bootstrap can improve load times due to browser caching, but self-hosting gives you more control and works offline.
+</Tip>

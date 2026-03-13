@@ -1,0 +1,517 @@
+---
+title: Visit Planning
+description: Tools and features to help visitors plan their perfect day at ZOODOM
+---
+
+Visit Planning encompasses all the tools and information visitors need to prepare for their trip to ZOODOM, including reservations, tickets, directions, and itinerary planning.
+
+## Current Implementation
+
+<Info>
+  The homepage currently includes a "Reservar ahora" (Book Now) button, but it's not yet connected to a booking system.
+</Info>
+
+**Existing Elements:**
+- Hero section CTA button: `src/pages/index.astro:40`
+- Button class: `btn btn-success px-5 py-2 rounded-pill`
+- Currently non-functional (no href or onclick handler)
+
+## Reservation Button Enhancement
+
+The existing button can be enhanced to trigger a reservation flow:
+
+<CodeGroup>
+```astro src/pages/index.astro
+<!-- Current Implementation -->
+<button class="btn btn-success px-5 py-2 rounded-pill">
+  Reservar ahora
+</button>
+
+<!-- Enhanced Implementation -->
+<a href="/reservar" class="btn btn-success px-5 py-2 rounded-pill">
+  Reservar ahora
+</a>
+
+<!-- Or with Modal -->
+<button 
+  class="btn btn-success px-5 py-2 rounded-pill"
+  data-bs-toggle="modal"
+  data-bs-target="#reservationModal"
+>
+  Reservar ahora
+</button>
+```
+</CodeGroup>
+
+## Proposed Features
+
+A comprehensive visit planning system should include:
+
+<CardGroup cols={2}>
+  <Card title="Online Ticketing" icon="ticket">
+    Purchase tickets in advance with date selection and pricing tiers
+  </Card>
+  <Card title="Interactive Map" icon="map">
+    Explore the zoo layout and plan your route
+  </Card>
+  <Card title="Daily Itinerary" icon="list-check">
+    Build a personalized schedule based on interests
+  </Card>
+  <Card title="Visitor Information" icon="circle-info">
+    Hours, admission prices, rules, and accessibility info
+  </Card>
+</CardGroup>
+
+## Reservation System Architecture
+
+<Steps>
+  <Step title="Ticket Selection">
+    Choose ticket types and quantity:
+    
+    ```typescript
+    interface TicketType {
+      id: string;
+      name: string;
+      description: string;
+      price: number;
+      ageRange?: string;
+    }
+    
+    const ticketTypes: TicketType[] = [
+      {
+        id: 'adult',
+        name: 'Adulto',
+        description: '12 años en adelante',
+        price: 300
+      },
+      {
+        id: 'child',
+        name: 'Niño',
+        description: '3-11 años',
+        price: 150
+      },
+      {
+        id: 'senior',
+        name: 'Tercera Edad',
+        description: '65+ años',
+        price: 200
+      },
+      {
+        id: 'student',
+        name: 'Estudiante',
+        description: 'Con identificación válida',
+        price: 200
+      }
+    ];
+    ```
+  </Step>
+  
+  <Step title="Date Selection">
+    Calendar widget for choosing visit date:
+    
+    ```astro
+    <div class="date-selector">
+      <label>Fecha de visita</label>
+      <input 
+        type="date" 
+        class="form-control"
+        min={new Date().toISOString().split('T')[0]}
+        max={getMaxDate()}
+      />
+    </div>
+    ```
+  </Step>
+  
+  <Step title="Add-ons & Experiences">
+    Optional upgrades and special experiences:
+    
+    - Alimentación de animales
+    - Foto con animales
+    - Tour guiado privado
+    - Encuentro con cuidadores
+    - Paquete familiar con almuerzo
+  </Step>
+  
+  <Step title="Payment Processing">
+    Secure payment integration with local payment gateways:
+    
+    - Tarjetas de crédito/débito
+    - Transferencia bancaria
+    - Pagos móviles (Orange Money, Tigo Money)
+  </Step>
+  
+  <Step title="Confirmation & E-tickets">
+    Generate QR code tickets and send confirmation email
+  </Step>
+</Steps>
+
+## Reservation Page Example
+
+<CodeGroup>
+```astro src/pages/reservar.astro
+---
+import Layout from '../layouts/Layout.astro';
+import TicketSelector from '../components/TicketSelector.astro';
+---
+
+<Layout>
+  <main>
+    <section class="container py-5">
+      <div class="row">
+        <div class="col-lg-8">
+          <h1>Reserva tu Visita</h1>
+          <p class="lead">Compra tus boletos en línea y ahorra tiempo</p>
+          
+          <form id="reservation-form">
+            <!-- Step 1: Date Selection -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <h3>1. Selecciona la fecha</h3>
+                <div class="row">
+                  <div class="col-md-6">
+                    <label class="form-label">Fecha de visita</label>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      id="visit-date"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 2: Ticket Selection -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <h3>2. Selecciona tus boletos</h3>
+                <TicketSelector />
+              </div>
+            </div>
+            
+            <!-- Step 3: Add-ons -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <h3>3. Experiencias adicionales (opcional)</h3>
+                <div class="form-check mb-3">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    value="feeding" 
+                    id="addon-feeding"
+                  />
+                  <label class="form-check-label" for="addon-feeding">
+                    <strong>Alimentación de animales</strong> (+RD$ 200)
+                    <br/>
+                    <small class="text-muted">
+                      Ayuda a alimentar a nuestros amigos del zoológico
+                    </small>
+                  </label>
+                </div>
+                <div class="form-check mb-3">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    value="photo" 
+                    id="addon-photo"
+                  />
+                  <label class="form-check-label" for="addon-photo">
+                    <strong>Foto con animales</strong> (+RD$ 500)
+                    <br/>
+                    <small class="text-muted">
+                      Sesión fotográfica con aves tropicales
+                    </small>
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 4: Contact Info -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <h3>4. Información de contacto</h3>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Nombre completo</label>
+                    <input type="text" class="form-control" required />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" required />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" class="form-control" required />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-success btn-lg w-100">
+              Continuar al pago
+            </button>
+          </form>
+        </div>
+        
+        <!-- Order Summary Sidebar -->
+        <div class="col-lg-4">
+          <div class="card sticky-top">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">Resumen de tu reserva</h5>
+            </div>
+            <div class="card-body">
+              <div id="order-summary">
+                <p class="text-muted">Selecciona tus boletos para ver el resumen</p>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="d-flex justify-content-between align-items-center">
+                <strong>Total:</strong>
+                <h4 class="mb-0" id="total-price">RD$ 0</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  // Real-time order summary updates
+  document.getElementById('reservation-form')?.addEventListener('input', updateSummary);
+  
+  function updateSummary() {
+    // Calculate totals and update summary display
+    const ticketCounts = getTicketCounts();
+    const addons = getSelectedAddons();
+    const total = calculateTotal(ticketCounts, addons);
+    
+    document.getElementById('total-price').textContent = `RD$ ${total}`;
+    renderSummary(ticketCounts, addons);
+  }
+</script>
+```
+</CodeGroup>
+
+## Interactive Zoo Map
+
+Help visitors navigate the zoo with an interactive SVG map:
+
+<CodeGroup>
+```astro src/components/ZooMap.astro
+---
+interface MapPoint {
+  id: string;
+  name: string;
+  type: 'exhibit' | 'facility' | 'restaurant' | 'restroom';
+  x: number;
+  y: number;
+}
+
+const mapPoints: MapPoint[] = [
+  { id: 'lions', name: 'Leones Africanos', type: 'exhibit', x: 100, y: 150 },
+  { id: 'birds', name: 'Aviario', type: 'exhibit', x: 300, y: 100 },
+  { id: 'reptiles', name: 'Casa de Reptiles', type: 'exhibit', x: 200, y: 250 },
+  { id: 'entrance', name: 'Entrada Principal', type: 'facility', x: 50, y: 50 },
+  { id: 'cafe', name: 'Cafetería', type: 'restaurant', x: 250, y: 200 },
+];
+---
+
+<div class="zoo-map">
+  <svg viewBox="0 0 800 600" class="w-100">
+    <!-- Map background -->
+    <image href="/images/zoo-map-base.svg" width="800" height="600" />
+    
+    <!-- Interactive points -->
+    {mapPoints.map(point => (
+      <g class="map-point" data-type={point.type}>
+        <circle 
+          cx={point.x} 
+          cy={point.y} 
+          r="10" 
+          class="point-marker"
+          data-bs-toggle="tooltip"
+          title={point.name}
+        />
+        <text x={point.x} y={point.y + 25} text-anchor="middle" class="point-label">
+          {point.name}
+        </text>
+      </g>
+    ))}
+  </svg>
+  
+  <!-- Map Legend -->
+  <div class="map-legend">
+    <div><span class="legend-icon exhibit"></span> Exhibiciones</div>
+    <div><span class="legend-icon facility"></span> Servicios</div>
+    <div><span class="legend-icon restaurant"></span> Restaurantes</div>
+    <div><span class="legend-icon restroom"></span> Baños</div>
+  </div>
+</div>
+
+<style>
+  .map-point {
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .map-point:hover {
+    transform: scale(1.1);
+  }
+  
+  .point-marker[data-type="exhibit"] { fill: var(--color-brand-green-600); }
+  .point-marker[data-type="facility"] { fill: var(--color-extended-blue-500); }
+  .point-marker[data-type="restaurant"] { fill: var(--color-extended-orange-500); }
+  .point-marker[data-type="restroom"] { fill: var(--color-neutral-gray-500); }
+</style>
+```
+</CodeGroup>
+
+## Itinerary Planner
+
+Allow visitors to create a custom itinerary:
+
+<Tabs>
+  <Tab title="Drag & Drop Builder">
+    Interactive timeline where visitors drag events and exhibits
+  </Tab>
+  <Tab title="Wizard Mode">
+    Guided questionnaire that generates recommended itinerary
+  </Tab>
+  <Tab title="Template Library">
+    Pre-made itineraries for different visitor types
+  </Tab>
+</Tabs>
+
+**Template Examples:**
+- "Día Familiar con Niños Pequeños"
+- "Tour Fotográfico"
+- "Enfoque en Conservación"
+- "Visita Rápida (2-3 horas)"
+- "Día Completo de Aventura"
+
+## Visitor Information Pages
+
+Create comprehensive guide pages:
+
+<AccordionGroup>
+  <Accordion title="Horarios y Admisión">
+    - Horario de apertura (9:00 AM - 5:00 PM)
+    - Últimas entradas (4:00 PM)
+    - Días especiales y cierres
+    - Precios de entrada
+    - Descuentos y promociones
+  </Accordion>
+  
+  <Accordion title="Cómo Llegar">
+    - Dirección completa
+    - Mapa de ubicación
+    - Opciones de transporte público
+    - Estacionamiento disponible
+    - Instrucciones desde puntos principales
+  </Accordion>
+  
+  <Accordion title="Reglas del Zoológico">
+    - No alimentar a los animales
+    - Mantener distancia de seguridad
+    - No usar flash en fotografías
+    - Respetar áreas restringidas
+    - Política de mascotas
+  </Accordion>
+  
+  <Accordion title="Accesibilidad">
+    - Acceso para sillas de ruedas
+    - Servicios para visitantes con discapacidad visual
+    - Áreas de descanso
+    - Préstamo de sillas de ruedas
+    - Estacionamiento accesible
+  </Accordion>
+  
+  <Accordion title="Servicios">
+    - Restaurantes y cafeterías
+    - Tienda de regalos
+    - Alquiler de carritos
+    - Áreas de picnic
+    - Primeros auxilios
+  </Accordion>
+</AccordionGroup>
+
+## Weather-Based Recommendations
+
+Provide suggestions based on weather conditions:
+
+```typescript
+interface WeatherRecommendation {
+  condition: string;
+  suggestion: string;
+  idealTime: string;
+  avoidAreas: string[];
+}
+
+const recommendations: WeatherRecommendation[] = [
+  {
+    condition: 'sunny',
+    suggestion: 'Perfecto para recorrer todo el zoológico',
+    idealTime: 'Visita temprano para evitar el calor del mediodía',
+    avoidAreas: []
+  },
+  {
+    condition: 'hot',
+    suggestion: 'Prioriza áreas con sombra y exhibiciones interiores',
+    idealTime: 'Mañana temprano (9-11 AM) o tarde (3-5 PM)',
+    avoidAreas: ['Zona desértica', 'Área de reptiles al aire libre']
+  },
+  {
+    condition: 'rainy',
+    suggestion: 'Visita exhibiciones cubiertas',
+    idealTime: 'Después de la lluvia para ver animales activos',
+    avoidAreas: ['Senderos sin pavimentar']
+  }
+];
+```
+
+<Note>
+  Integrate with a weather API to show current conditions and forecasts at the top of the reservation page.
+</Note>
+
+## Mobile App Integration
+
+<CardGroup cols={2}>
+  <Card title="QR Code Entry" icon="qr-code">
+    Contactless ticket scanning at entrance
+  </Card>
+  <Card title="GPS Navigation" icon="location-dot">
+    Turn-by-turn directions within zoo
+  </Card>
+  <Card title="Real-time Notifications" icon="bell">
+    Alerts for upcoming shows and events
+  </Card>
+  <Card title="Offline Mode" icon="wifi-slash">
+    Downloaded maps and schedules work without internet
+  </Card>
+</CardGroup>
+
+## Group Bookings
+
+Special system for schools and large groups:
+
+```typescript
+interface GroupBooking {
+  organizationName: string;
+  contactPerson: string;
+  groupSize: number;
+  groupType: 'school' | 'corporate' | 'social';
+  requestedDate: Date;
+  alternativeDates: Date[];
+  specialRequirements: string;
+  educationalProgram: boolean;
+}
+```
+
+**Group Benefits:**
+- Discounted rates for 15+ people
+- Dedicated guide included
+- Private areas for lunch
+- Customizable educational programs
+- Flexible payment terms

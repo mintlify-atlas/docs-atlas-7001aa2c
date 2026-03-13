@@ -1,0 +1,181 @@
+---
+title: 'Head Component'
+description: 'SEO and meta tags component for ZOODOM'
+---
+
+# Head Component
+
+The `Head.astro` component manages all meta tags, SEO configuration, and Open Graph properties for the ZOODOM website. It provides a reusable way to set page-specific metadata while maintaining consistent defaults.
+
+## Component Code
+
+```astro
+---
+import '../assets/global.css';
+interface Props {
+    title?: string;
+    description?: string;
+    canonicalUrl?: string;
+    image?: string;
+}
+
+const {
+    title = 'ZOODOM - Parque Zoológico Nacional',
+    description = 'ZOODOM - Parque Zoológico Nacional. Descubre la fauna y flora en nuestro zoológico.',
+    canonicalUrl = 'https://zoodomi.netlify.app',
+    image = '/cover.png',
+} = Astro.props;
+
+const socialImageUrl = new URL(image, canonicalUrl).href;
+---
+
+<!-- Meta generales -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<meta name="description" content={description} />
+<meta name="keywords" content="zoo, zoológico, animales, naturaleza, parque, rd" />
+<meta name="author" content="Ronald Santana" />
+<!-- Titulo -->
+<title>{title}</title>
+<!-- CSS -->
+<link rel="stylesheet" href="/src/assets/main.css" />
+<!-- Fuentes -->
+<link rel="canonical" href={canonicalUrl} />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" rel="stylesheet">
+<!-- Meta de Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="es_DO" />
+<meta property="og:site_name" content="ZOODOM" />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={socialImageUrl} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Portada de ZOODOM - Parque Zoológico Nacional" />
+```
+
+## Props
+
+<ParamField path="title" type="string" default="ZOODOM - Parque Zoológico Nacional">
+  The page title displayed in browser tabs and search results. Also used for Open Graph title.
+</ParamField>
+
+<ParamField path="description" type="string" default="ZOODOM - Parque Zoológico Nacional. Descubre la fauna y flora en nuestro zoológico.">
+  Meta description for SEO and Open Graph. Appears in search results and social media previews.
+</ParamField>
+
+<ParamField path="canonicalUrl" type="string" default="https://zoodomi.netlify.app">
+  The canonical URL for the page. Used for SEO and Open Graph URL property.
+</ParamField>
+
+<ParamField path="image" type="string" default="/cover.png">
+  Relative or absolute path to the social media preview image. Automatically converted to absolute URL for Open Graph.
+</ParamField>
+
+## Features
+
+### SEO Optimization
+- **Charset and viewport**: UTF-8 encoding and responsive viewport settings
+- **Meta description**: Customizable description for search engines
+- **Keywords**: Predefined keywords related to zoo and nature
+- **Canonical URL**: Prevents duplicate content issues
+- **Author attribution**: Credits Ronald Santana
+
+### Open Graph Integration
+- Full Open Graph protocol implementation for rich social media previews
+- Spanish (Dominican Republic) locale configuration (`es_DO`)
+- Optimized image dimensions (1200x630) for social platforms
+- Proper image type and alt text for accessibility
+
+### Typography
+- Preconnects to Google Fonts for performance
+- Loads Onest font family with variable weights (100-900)
+
+### CSS
+- Imports global styles from `../assets/global.css`
+- Links to main stylesheet for component-specific styles
+
+## Usage Examples
+
+### Default Usage
+
+Use the Head component with default values:
+
+```astro
+---
+import Head from '../components/Head.astro';
+---
+
+<html>
+  <head>
+    <Head />
+  </head>
+  <body>
+    <!-- Page content -->
+  </body>
+</html>
+```
+
+### Custom Page Metadata
+
+Override defaults for specific pages:
+
+```astro
+---
+import Head from '../components/Head.astro';
+---
+
+<html>
+  <head>
+    <Head 
+      title="Especies - ZOODOM"
+      description="Conoce las increíbles especies que habitan en nuestro zoológico nacional"
+      canonicalUrl="https://zoodomi.netlify.app/especies"
+      image="/especies-cover.png"
+    />
+  </head>
+  <body>
+    <!-- Species page content -->
+  </body>
+</html>
+```
+
+### Blog Post with Custom Image
+
+```astro
+---
+import Head from '../components/Head.astro';
+---
+
+<html>
+  <head>
+    <Head 
+      title="Los Leones del ZOODOM - Blog"
+      description="Descubre la vida de nuestros leones y su hábitat en el parque"
+      canonicalUrl="https://zoodomi.netlify.app/blog/leones-zoodom"
+      image="/blog/leones-thumbnail.jpg"
+    />
+  </head>
+  <body>
+    <!-- Blog post content -->
+  </body>
+</html>
+```
+
+## How It Works
+
+1. **Props Destructuring**: The component accepts optional props with sensible defaults using JavaScript destructuring.
+
+2. **Image URL Resolution**: The `socialImageUrl` is computed by combining the relative `image` path with the `canonicalUrl` to create an absolute URL required by Open Graph.
+
+3. **Meta Tag Injection**: All meta tags are rendered in the component template and injected into the page's `<head>` when the component is used.
+
+4. **Font Optimization**: Uses `rel="preconnect"` to establish early connections to Google Fonts, improving load performance.
+
+## Related Components
+
+- [Layout Component](/components/layout) - Uses Head component as part of the base layout

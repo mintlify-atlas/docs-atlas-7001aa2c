@@ -1,0 +1,466 @@
+---
+title: Event Calendar
+description: Planned feature for displaying zoo events, shows, and special activities
+---
+
+The Event Calendar will showcase all scheduled activities at ZOODOM, including animal shows, educational programs, special events, and seasonal celebrations.
+
+## Status
+
+<Warning>
+  This feature is currently planned but not yet implemented. No dedicated page or data structure exists in the codebase.
+</Warning>
+
+**Planning Phase:**
+- Not linked in current navigation
+- No event data structure defined
+- No calendar component created
+
+## Proposed Implementation
+
+Implement a comprehensive event management system using Astro's content collections and calendar libraries.
+
+## Event Types
+
+<CardGroup cols={3}>
+  <Card title="Animal Shows" icon="paw">
+    Scheduled feeding times and animal demonstrations
+  </Card>
+  <Card title="Educational Programs" icon="graduation-cap">
+    Guided tours, workshops, and school programs
+  </Card>
+  <Card title="Special Events" icon="calendar-star">
+    Seasonal celebrations, night tours, and fundraisers
+  </Card>
+  <Card title="Conservation Talks" icon="microphone">
+    Expert presentations on wildlife conservation
+  </Card>
+  <Card title="Birthday Parties" icon="cake">
+    Private party packages for children
+  </Card>
+  <Card title="Volunteer Days" icon="hands">
+    Community involvement opportunities
+  </Card>
+</CardGroup>
+
+## Content Collection Schema
+
+<Steps>
+  <Step title="Define Event Schema">
+    Create event content collection in `src/content/config.ts`:
+    
+    ```typescript
+    import { defineCollection, z } from 'astro:content';
+    
+    const eventsCollection = defineCollection({
+      type: 'content',
+      schema: z.object({
+        title: z.string(),
+        type: z.enum([
+          'animal-show',
+          'educational',
+          'special-event',
+          'conservation-talk',
+          'birthday-party',
+          'volunteer'
+        ]),
+        startDate: z.date(),
+        endDate: z.date().optional(),
+        startTime: z.string(),
+        endTime: z.string().optional(),
+        location: z.string(),
+        description: z.string(),
+        image: z.string(),
+        capacity: z.number().optional(),
+        price: z.number().optional(),
+        requiresReservation: z.boolean().default(false),
+        ageRestriction: z.string().optional(),
+        recurring: z.enum(['none', 'daily', 'weekly', 'monthly']).default('none'),
+        recurrenceEnd: z.date().optional(),
+        featured: z.boolean().default(false),
+        tags: z.array(z.string()).optional(),
+      }),
+    });
+    
+    export const collections = {
+      'eventos': eventsCollection,
+    };
+    ```
+  </Step>
+  
+  <Step title="Create Event Content">
+    Add events as MDX files in `src/content/eventos/`:
+    
+    ```mdx
+    ---
+    # src/content/eventos/alimentacion-leones.mdx
+    title: Alimentación de Leones
+    type: animal-show
+    startDate: 2026-03-15
+    startTime: "14:00"
+    endTime: "14:30"
+    location: Área de Felinos
+    description: Observa cómo nuestros cuidadores alimentan a los leones africanos
+    image: /images/eventos/leones-alimentacion.jpg
+    capacity: 50
+    price: 0
+    requiresReservation: false
+    recurring: daily
+    featured: true
+    tags:
+      - leones
+      - alimentación
+      - felinos
+    ---
+    
+    ## Sobre este Evento
+    
+    Únete a nosotros para presenciar uno de los momentos más emocionantes 
+    del día: la alimentación de nuestros majestuosos leones africanos.
+    
+    ### Qué Aprenderás
+    
+    - Hábitos alimenticios de los leones en vida silvestre
+    - Cómo se prepara la dieta en el zoológico
+    - Técnicas de enriquecimiento ambiental
+    - Comportamiento social durante la alimentación
+    
+    ### Información Importante
+    
+    - Llega 10 minutos antes para asegurar un buen lugar
+    - Se permite fotografía sin flash
+    - Evento gratuito con entrada al zoológico
+    - Clima permitiendo
+    ```
+  </Step>
+</Steps>
+
+## Calendar Views
+
+Implement multiple calendar views for different user needs:
+
+<Tabs>
+  <Tab title="Monthly Grid">
+    Traditional calendar grid showing all events for the month
+    
+    ```astro
+    ---
+    import { getCollection } from 'astro:content';
+    import FullCalendar from '@fullcalendar/astro';
+    
+    const events = await getCollection('eventos');
+    const calendarEvents = events.map(event => ({
+      title: event.data.title,
+      start: `${event.data.startDate}T${event.data.startTime}`,
+      end: event.data.endTime ? 
+        `${event.data.endDate || event.data.startDate}T${event.data.endTime}` : 
+        undefined,
+      url: `/eventos/${event.slug}`,
+      backgroundColor: getEventColor(event.data.type)
+    }));
+    ---
+    
+    <FullCalendar 
+      options={{
+        plugins: ['dayGrid', 'timeGrid', 'list'],
+        initialView: 'dayGridMonth',
+        events: calendarEvents,
+        locale: 'es',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listWeek'
+        }
+      }}
+    />
+    ```
+  </Tab>
+  
+  <Tab title="List View">
+    Chronological list of upcoming events with filters
+    
+    ```astro
+    ---
+    const today = new Date();
+    const upcomingEvents = events
+      .filter(event => event.data.startDate >= today)
+      .sort((a, b) => a.data.startDate - b.data.startDate);
+    ---
+    
+    <div class="events-list">
+      {upcomingEvents.map(event => (
+        <div class="event-item">
+          <div class="event-date">
+            <span class="day">{event.data.startDate.getDate()}</span>
+            <span class="month">
+              {event.data.startDate.toLocaleString('es', { month: 'short' })}
+            </span>
+          </div>
+          <div class="event-details">
+            <h3>{event.data.title}</h3>
+            <p>{event.data.startTime} - {event.data.location}</p>
+            <a href={`/eventos/${event.slug}`} class="btn btn-sm btn-success">
+              Ver detalles
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+    ```
+  </Tab>
+  
+  <Tab title="Daily Schedule">
+    Detailed timeline view for a specific day
+    
+    ```astro
+    <div class="daily-schedule">
+      {eventsForToday.map(event => (
+        <div class="schedule-item" 
+             style={`grid-row-start: ${getTimeSlot(event.data.startTime)}`}>
+          <div class="time">{event.data.startTime}</div>
+          <div class="event-card">
+            <h4>{event.data.title}</h4>
+            <span class="location">
+              <i class="bi bi-geo-alt"></i> {event.data.location}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+    ```
+  </Tab>
+</Tabs>
+
+## Event Detail Page
+
+<CodeGroup>
+```astro src/pages/eventos/[slug].astro
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const events = await getCollection('eventos');
+  return events.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const {
+  title,
+  type,
+  startDate,
+  startTime,
+  endTime,
+  location,
+  description,
+  image,
+  capacity,
+  price,
+  requiresReservation
+} = entry.data;
+
+const formattedDate = startDate.toLocaleDateString('es-DO', {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+---
+
+<Layout>
+  <main>
+    <section class="event-header" style={`background-image: url(${image})`}>
+      <div class="overlay">
+        <div class="container">
+          <span class="badge bg-success mb-3">{type}</span>
+          <h1 class="text-white">{title}</h1>
+          <p class="text-white">
+            <i class="bi bi-calendar me-2"></i>{formattedDate}
+            <i class="bi bi-clock ms-3 me-2"></i>{startTime}
+            {endTime && ` - ${endTime}`}
+          </p>
+        </div>
+      </div>
+    </section>
+    
+    <section class="container py-5">
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="content">
+            <Content />
+          </div>
+        </div>
+        
+        <div class="col-lg-4">
+          <div class="card sticky-top">
+            <div class="card-body">
+              <h5>Detalles del Evento</h5>
+              <ul class="list-unstyled">
+                <li class="mb-3">
+                  <i class="bi bi-geo-alt text-success"></i>
+                  <strong>Ubicación:</strong><br/>
+                  {location}
+                </li>
+                {capacity && (
+                  <li class="mb-3">
+                    <i class="bi bi-people text-success"></i>
+                    <strong>Capacidad:</strong><br/>
+                    {capacity} personas
+                  </li>
+                )}
+                <li class="mb-3">
+                  <i class="bi bi-ticket text-success"></i>
+                  <strong>Precio:</strong><br/>
+                  {price === 0 ? 'Incluido con entrada' : `RD$ ${price}`}
+                </li>
+              </ul>
+              
+              {requiresReservation && (
+                <button class="btn btn-success w-100">
+                  Reservar Ahora
+                </button>
+              )}
+              
+              <button class="btn btn-outline-success w-100 mt-2">
+                <i class="bi bi-calendar-plus"></i> Agregar al Calendario
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+```
+</CodeGroup>
+
+## Integration Features
+
+<AccordionGroup>
+  <Accordion title="Calendar Export">
+    Allow users to export events to their personal calendars:
+    
+    ```typescript
+    // Generate .ics file
+    function generateICS(event: Event): string {
+      return `
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:${formatDateForICS(event.startDate, event.startTime)}
+DTEND:${formatDateForICS(event.endDate, event.endTime)}
+SUMMARY:${event.title}
+DESCRIPTION:${event.description}
+LOCATION:ZOODOM - ${event.location}
+END:VEVENT
+END:VCALENDAR
+      `.trim();
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Email Reminders">
+    Send automated reminders for registered events
+  </Accordion>
+  
+  <Accordion title="Real-time Updates">
+    Show event cancellations or time changes immediately
+  </Accordion>
+  
+  <Accordion title="Waitlist Management">
+    Handle capacity limits with automated waitlist
+  </Accordion>
+</AccordionGroup>
+
+## Recurring Events
+
+Handle daily, weekly, and monthly recurring events:
+
+```typescript
+function generateRecurringDates(
+  event: Event,
+  startDate: Date,
+  endDate: Date
+): Date[] {
+  const dates: Date[] = [];
+  let currentDate = new Date(event.startDate);
+  
+  while (currentDate <= (event.recurrenceEnd || endDate)) {
+    if (currentDate >= startDate) {
+      dates.push(new Date(currentDate));
+    }
+    
+    switch (event.recurring) {
+      case 'daily':
+        currentDate.setDate(currentDate.getDate() + 1);
+        break;
+      case 'weekly':
+        currentDate.setDate(currentDate.getDate() + 7);
+        break;
+      case 'monthly':
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        break;
+      default:
+        return dates;
+    }
+  }
+  
+  return dates;
+}
+```
+
+## Filtering & Search
+
+Implement comprehensive filtering options:
+
+<CardGroup cols={2}>
+  <Card title="By Event Type" icon="filter">
+    Filter by animal shows, educational programs, special events, etc.
+  </Card>
+  <Card title="By Date Range" icon="calendar-range">
+    Show events within a specific date range
+  </Card>
+  <Card title="By Location" icon="map-pin">
+    Filter events by zoo area
+  </Card>
+  <Card title="By Age Group" icon="users">
+    Find family-friendly or adult-only events
+  </Card>
+</CardGroup>
+
+## Mobile Experience
+
+<Note>
+  Ensure the calendar is fully responsive with touch-friendly controls for mobile visitors planning their zoo visit on-the-go.
+</Note>
+
+**Mobile Optimizations:**
+- Swipe gestures for navigating months
+- Tap to expand event details
+- "Add to Calendar" with native calendar integration
+- Push notifications for upcoming events (if PWA implemented)
+- Offline access to today's schedule
+
+## Analytics & Insights
+
+Track event popularity to optimize scheduling:
+
+```typescript
+// Track event views and reservations
+interface EventAnalytics {
+  eventId: string;
+  views: number;
+  reservations: number;
+  cancellations: number;
+  averageRating: number;
+  peakAttendanceTime: string;
+}
+```
+
+<Tip>
+  Use this data to identify popular events, optimize timing, and improve future planning.
+</Tip>

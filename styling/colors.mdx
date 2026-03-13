@@ -1,0 +1,211 @@
+---
+title: Colors
+description: Complete color palette for the ZOODOM website including brand greens, extended colors, and neutrals
+---
+
+The ZOODOM color system is built using CSS custom properties defined in `src/assets/global.css`. All colors are accessible via CSS variables throughout the application.
+
+## Brand Green
+
+The primary brand color palette featuring 10 shades of green, from deep forest tones to light mint.
+
+| Variable | Hex Value | Usage |
+|----------|-----------|-------|
+| `--color-brand-green-900` | `#144A1F` | Dark green, text on light backgrounds |
+| `--color-brand-green-800` | `#246C32` | Deep green accent |
+| `--color-brand-green-700` | `#388E49` | Primary buttons, links |
+| `--color-brand-green-600` | `#51B063` | Hover states |
+| `--color-brand-green-500` | `#6DD281` | Primary brand color |
+| `--color-brand-green-400` | `#8EF4A2` | Highlights |
+| `--color-brand-green-300` | `#ACFFBC` | Light accents |
+| `--color-brand-green-200` | `#C4FFD0` | Subtle backgrounds |
+| `--color-brand-green-100` | `#DCFFE3` | Very light backgrounds |
+| `--color-brand-green-50` | `#F4FFF6` | Lightest tint |
+
+### Example Usage
+
+```css
+.hero-section {
+  background-color: var(--color-brand-green-50);
+  border-left: 4px solid var(--color-brand-green-500);
+}
+
+.cta-button {
+  background-color: var(--color-brand-green-600);
+  color: white;
+}
+```
+
+## Accent Green
+
+A complementary green palette with yellow-green tones, providing visual variety while maintaining brand consistency.
+
+| Variable | Hex Value | Usage |
+|----------|-----------|-------|
+| `--color-accent-green-900` | `#2E4F19` | Dark accent |
+| `--color-accent-green-800` | `#416C26` | Deep accent |
+| `--color-accent-green-700` | `#558936` | Medium dark accent |
+| `--color-accent-green-600` | `#6BA747` | Medium accent |
+| `--color-accent-green-500` | `#82C45A` | Primary accent color |
+| `--color-accent-green-400` | `#9AE16F` | Light accent |
+| `--color-accent-green-300` | `#B3FE87` | Bright accent |
+| `--color-accent-green-200` | `#CAFFAB` | Very light accent |
+| `--color-accent-green-100` | `#E1FFCF` | Subtle accent background |
+| `--color-accent-green-50` | `#F7FFF3` | Lightest accent tint |
+
+### Example Usage
+
+```css
+.info-card {
+  background: linear-gradient(
+    135deg,
+    var(--color-accent-green-100),
+    var(--color-accent-green-50)
+  );
+}
+```
+
+## Extended Colors
+
+Additional colors for semantic meaning and visual interest.
+
+### Blue
+
+| Variable | Hex Value | Usage |
+|----------|-----------|-------|
+| `--color-extended-blue-900` | `#113E4D` | Dark blue, water themes |
+| `--color-extended-blue-500` | `#6BD8FC` | Bright blue, info messages |
+| `--color-extended-blue-100` | `#C4F0FF` | Light blue backgrounds |
+
+### Yellow
+
+| Variable | Hex Value | Usage |
+|----------|-----------|-------|
+| `--color-extended-yellow-900` | `#5C4100` | Dark yellow, text |
+| `--color-extended-yellow-500` | `#FFB401` | Warning, attention |
+| `--color-extended-yellow-100` | `#FFEAB8` | Light warning backgrounds |
+
+### Orange
+
+| Variable | Hex Value | Usage |
+|----------|-----------|-------|
+| `--color-extended-orange-900` | `#5B3700` | Dark orange |
+| `--color-extended-orange-500` | `#FE9900` | Alerts, highlights |
+| `--color-extended-orange-100` | `#FFE2B7` | Light orange backgrounds |
+
+### Red
+
+| Variable | Hex Value | Usage |
+|----------|-----------|-------|
+| `--color-extended-red-900` | `#5C0600` | Dark red |
+| `--color-extended-red-500` | `#FF2414` | Errors, critical alerts |
+| `--color-extended-red-100` | `#FFC1BD` | Light error backgrounds |
+
+### Example Usage
+
+```astro
+<div class="alert-warning">
+  <p style="color: var(--color-extended-yellow-900)">
+    Park closes at 5 PM today
+  </p>
+</div>
+
+<div class="error-message" style="background-color: var(--color-extended-red-100)">
+  <span style="color: var(--color-extended-red-500)">Error occurred</span>
+</div>
+```
+
+## Neutral Colors
+
+Grayscale and utility colors for text, backgrounds, and UI elements.
+
+### Black & White
+
+| Variable | Hex Value | Usage |
+|----------|-----------|-------|
+| `--color-neutral-black-900` | `#222222` | Primary text color |
+| `--color-neutral-white-900` | `#FFFFFF` | White backgrounds, reverse text |
+| `--color-neutral-overlay-900` | `#00000077` | Semi-transparent overlay (47% opacity) |
+
+### Grayscale
+
+| Variable | Hex Value | Usage |
+|----------|-----------|-------|
+| `--color-neutral-gray-900` | `#4B4B4B` | Body text |
+| `--color-neutral-gray-800` | `#5F5F5F` | Secondary text |
+| `--color-neutral-gray-700` | `#747474` | Muted text |
+| `--color-neutral-gray-600` | `#888888` | Disabled text |
+| `--color-neutral-gray-500` | `#9C9C9C` | Placeholder text |
+| `--color-neutral-gray-400` | `#B1B1B1` | Light borders |
+| `--color-neutral-gray-300` | `#C5C5C5` | Dividers |
+| `--color-neutral-gray-200` | `#DADADA` | Light backgrounds |
+| `--color-neutral-gray-100` | `#EEEEEE` | Very light backgrounds |
+| `--color-neutral-gray-50` | `#FFFFFF` | White (same as white-900) |
+
+### Example Usage
+
+```css
+html, body {
+  background-color: var(--color-neutral-white-900);
+  color: var(--color-neutral-black-900);
+}
+
+p {
+  color: var(--color-neutral-gray-900);
+}
+
+.divider {
+  border-bottom: 1px solid var(--color-neutral-gray-300);
+}
+
+.modal-overlay {
+  background-color: var(--color-neutral-overlay-900);
+}
+```
+
+## Color Accessibility
+
+When using colors, ensure sufficient contrast ratios:
+
+- **Large text (18px+)**: Minimum 3:1 contrast ratio
+- **Normal text**: Minimum 4.5:1 contrast ratio
+- **UI elements**: Minimum 3:1 contrast ratio
+
+### Recommended Combinations
+
+```css
+/* High contrast - excellent readability */
+.high-contrast {
+  color: var(--color-neutral-black-900);
+  background-color: var(--color-neutral-white-900);
+}
+
+/* Brand colored text on light background */
+.brand-text {
+  color: var(--color-brand-green-700);
+  background-color: var(--color-brand-green-50);
+}
+
+/* White text on dark background */
+.dark-section {
+  color: var(--color-neutral-white-900);
+  background-color: var(--color-brand-green-900);
+}
+```
+
+## Implementation
+
+All color variables are defined in `/src/assets/global.css:1-58`:
+
+```css
+:root {
+  /* Primitives */
+  
+  /* Green */
+  --color-brand-green-900: #144A1F;
+  --color-brand-green-800: #246C32;
+  /* ... etc */
+}
+```
+
+These variables are globally available after importing the CSS file in your layout or component.

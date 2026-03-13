@@ -1,0 +1,714 @@
+---
+title: Gallery
+description: Photo and video gallery showcasing ZOODOM's animals, facilities, and visitor experiences
+---
+
+The Gallery ("Galería") will be a visual showcase of ZOODOM's animals, habitats, events, and memorable moments captured by staff and visitors.
+
+## Status
+
+<Warning>
+  Currently in planning phase. A navigation link exists at `src/pages/index.astro:23` but no gallery implementation exists yet.
+</Warning>
+
+## Gallery Types
+
+<CardGroup cols={2}>
+  <Card title="Animal Photos" icon="camera">
+    High-quality images of zoo residents organized by species
+  </Card>
+  <Card title="Video Collection" icon="video">
+    Video clips of animals, feeding times, and educational content
+  </Card>
+  <Card title="Event Albums" icon="images">
+    Photo collections from special events and celebrations
+  </Card>
+  <Card title="Behind the Scenes" icon="eye">
+    Exclusive looks at animal care and zoo operations
+  </Card>
+</CardGroup>
+
+## Implementation Architecture
+
+Build a performant gallery using Astro's image optimization and modern web technologies.
+
+<Steps>
+  <Step title="Content Structure">
+    Define gallery schema in `src/content/config.ts`:
+    
+    ```typescript
+    import { defineCollection, z } from 'astro:content';
+    
+    const galleryCollection = defineCollection({
+      type: 'data',
+      schema: z.object({
+        title: z.string(),
+        description: z.string(),
+        date: z.date(),
+        category: z.enum([
+          'animales',
+          'eventos',
+          'instalaciones',
+          'detras-escenas',
+          'visitantes'
+        ]),
+        tags: z.array(z.string()),
+        coverImage: z.string(),
+        images: z.array(z.object({
+          src: z.string(),
+          alt: z.string(),
+          caption: z.string().optional(),
+          photographer: z.string().optional(),
+        })),
+        featured: z.boolean().default(false),
+      }),
+    });
+    
+    export const collections = {
+      'galeria': galleryCollection,
+    };
+    ```
+  </Step>
+  
+  <Step title="Create Gallery Albums">
+    Add albums as JSON files in `src/content/galeria/`:
+    
+    ```json
+    {
+      "title": "Leones Africanos",
+      "description": "Nuestra familia de leones africanos en su hábitat natural",
+      "date": "2026-03-01",
+      "category": "animales",
+      "tags": ["leones", "felinos", "áfrica"],
+      "coverImage": "/images/gallery/leones/cover.jpg",
+      "images": [
+        {
+          "src": "/images/gallery/leones/leon-1.jpg",
+          "alt": "León macho descansando",
+          "caption": "Simba disfrutando el sol de la tarde",
+          "photographer": "Carlos Mejía"
+        },
+        {
+          "src": "/images/gallery/leones/leon-2.jpg",
+          "alt": "Leona con cachorros",
+          "caption": "Nala con sus dos cachorros recién nacidos",
+          "photographer": "María González"
+        }
+      ],
+      "featured": true
+    }
+    ```
+  </Step>
+  
+  <Step title="Build Gallery Interface">
+    Create responsive grid layouts with lightbox functionality
+  </Step>
+</Steps>
+
+## Gallery Grid Layout
+
+<CodeGroup>
+```astro src/pages/galeria/index.astro
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+
+const allAlbums = (await getCollection('galeria'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const categories = [
+  { slug: 'todos', name: 'Todos', icon: 'grid' },
+  { slug: 'animales', name: 'Animales', icon: 'paw' },
+  { slug: 'eventos', name: 'Eventos', icon: 'calendar' },
+  { slug: 'instalaciones', name: 'Instalaciones', icon: 'building' },
+  { slug: 'detras-escenas', name: 'Detrás de Escenas', icon: 'eye' },
+];
+---
+
+<Layout>
+  <main>
+    <!-- Hero Section -->
+    <section class="gallery-hero py-5 bg-success text-white text-center">
+      <div class="container">
+        <h1 class="display-4">Galería de ZOODOM</h1>
+        <p class="lead">
+          Explora momentos inolvidables de nuestros animales y visitantes
+        </p>
+      </div>
+    </section>
+    
+    <!-- Filter Categories -->
+    <section class="container py-4">
+      <div class="d-flex justify-content-center gap-2 flex-wrap" id="category-filters">
+        {categories.map(cat => (
+          <button 
+            class="btn btn-outline-success"
+            data-category={cat.slug}
+          >
+            <i class={`bi bi-${cat.icon} me-2`}></i>
+            {cat.name}
+          </button>
+        ))}
+      </div>
+    </section>
+    
+    <!-- Albums Grid -->
+    <section class="container py-5">
+      <div class="row g-4" id="albums-grid">
+        {allAlbums.map(album => (
+          <div 
+            class="col-lg-4 col-md-6 col-12 album-item"
+            data-category={album.data.category}
+          >
+            <div class="card album-card h-100">
+              <div class="album-cover position-relative overflow-hidden">
+                <img 
+                  src={album.data.coverImage} 
+                  class="card-img-top" 
+                  alt={album.data.title}
+                />
+                <div class="album-overlay position-absolute top-0 start-0 w-100 h-100">
+                  <div class="d-flex align-items-center justify-content-center h-100">
+                    <span class="badge bg-light text-dark">
+                      <i class="bi bi-images"></i> 
+                      {album.data.images.length} fotos
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <h3 class="card-title h5">{album.data.title}</h3>
+                <p class="card-text text-muted small">{album.data.description}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="badge bg-success">{album.data.category}</span>
+                  <small class="text-muted">
+                    {album.data.date.toLocaleDateString('es-DO')}
+                  </small>
+                </div>
+              </div>
+              <div class="card-footer bg-transparent">
+                <a 
+                  href={`/galeria/${album.id}`} 
+                  class="btn btn-success w-100"
+                >
+                  Ver álbum
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .album-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .album-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  
+  .album-cover {
+    height: 250px;
+    position: relative;
+  }
+  
+  .album-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .album-card:hover .album-cover img {
+    transform: scale(1.1);
+  }
+  
+  .album-overlay {
+    background: rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .album-card:hover .album-overlay {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  // Category filtering
+  const buttons = document.querySelectorAll('#category-filters button');
+  const albums = document.querySelectorAll('.album-item');
+  
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      const category = button.getAttribute('data-category');
+      
+      // Update active button
+      buttons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      
+      // Filter albums
+      albums.forEach(album => {
+        const albumCategory = album.getAttribute('data-category');
+        if (category === 'todos' || albumCategory === category) {
+          album.style.display = 'block';
+        } else {
+          album.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
+```
+</CodeGroup>
+
+## Album Detail Page with Lightbox
+
+<CodeGroup>
+```astro src/pages/galeria/[id].astro
+---
+import { getCollection, getEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const albums = await getCollection('galeria');
+  return albums.map((album) => ({
+    params: { id: album.id },
+    props: { album },
+  }));
+}
+
+const { album } = Astro.props;
+const { title, description, date, category, images, tags } = album.data;
+---
+
+<Layout>
+  <main>
+    <!-- Album Header -->
+    <section class="album-header py-5">
+      <div class="container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/galeria">Galería</a></li>
+            <li class="breadcrumb-item active">{title}</li>
+          </ol>
+        </nav>
+        
+        <h1 class="display-4">{title}</h1>
+        <p class="lead">{description}</p>
+        <div class="d-flex gap-3 align-items-center text-muted">
+          <span>
+            <i class="bi bi-calendar"></i> 
+            {date.toLocaleDateString('es-DO', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </span>
+          <span>|</span>
+          <span>
+            <i class="bi bi-images"></i> {images.length} fotos
+          </span>
+          <span>|</span>
+          <span class="badge bg-success">{category}</span>
+        </div>
+        
+        {tags && tags.length > 0 && (
+          <div class="mt-3">
+            {tags.map(tag => (
+              <span class="badge bg-light text-dark me-2">#{tag}</span>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+    
+    <!-- Photo Grid with Lightbox -->
+    <section class="container pb-5">
+      <div class="row g-3" id="gallery-grid">
+        {images.map((image, index) => (
+          <div class="col-lg-4 col-md-6 col-12">
+            <div 
+              class="gallery-item position-relative overflow-hidden"
+              data-index={index}
+            >
+              <img 
+                src={image.src} 
+                alt={image.alt}
+                class="img-fluid w-100"
+                loading="lazy"
+              />
+              {image.caption && (
+                <div class="image-caption position-absolute bottom-0 start-0 w-100 p-3">
+                  <p class="text-white mb-0 small">{image.caption}</p>
+                  {image.photographer && (
+                    <small class="text-white-50">
+                      Foto: {image.photographer}
+                    </small>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+    
+    <!-- Lightbox Modal -->
+    <div class="modal fade" id="lightboxModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0">
+          <div class="modal-body p-0 position-relative">
+            <button 
+              type="button" 
+              class="btn-close btn-close-white position-absolute top-0 end-0 m-3" 
+              data-bs-dismiss="modal"
+              style="z-index: 1050;"
+            ></button>
+            
+            <div class="text-center">
+              <img 
+                id="lightbox-image" 
+                src="" 
+                alt="" 
+                class="img-fluid"
+              />
+              <div class="lightbox-caption text-white mt-3" id="lightbox-caption"></div>
+            </div>
+            
+            <!-- Navigation Arrows -->
+            <button 
+              class="btn btn-light position-absolute top-50 start-0 translate-middle-y ms-3"
+              id="lightbox-prev"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button 
+              class="btn btn-light position-absolute top-50 end-0 translate-middle-y me-3"
+              id="lightbox-next"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .gallery-item {
+    cursor: pointer;
+    height: 300px;
+    transition: transform 0.3s ease;
+  }
+  
+  .gallery-item:hover {
+    transform: scale(1.05);
+  }
+  
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .image-caption {
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .gallery-item:hover .image-caption {
+    opacity: 1;
+  }
+  
+  #lightbox-image {
+    max-height: 80vh;
+  }
+</style>
+
+<script>
+  // Lightbox functionality
+  const images = {JSON.stringify(images)};
+  let currentIndex = 0;
+  
+  const modal = new bootstrap.Modal(document.getElementById('lightboxModal'));
+  const lightboxImage = document.getElementById('lightbox-image');
+  const lightboxCaption = document.getElementById('lightbox-caption');
+  
+  function showImage(index) {
+    currentIndex = index;
+    const image = images[index];
+    lightboxImage.src = image.src;
+    lightboxImage.alt = image.alt;
+    
+    let captionHtml = '';
+    if (image.caption) captionHtml += `<p>${image.caption}</p>`;
+    if (image.photographer) captionHtml += `<small>Foto: ${image.photographer}</small>`;
+    lightboxCaption.innerHTML = captionHtml;
+  }
+  
+  // Open lightbox on image click
+  document.querySelectorAll('.gallery-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const index = parseInt(item.getAttribute('data-index'));
+      showImage(index);
+      modal.show();
+    });
+  });
+  
+  // Navigation
+  document.getElementById('lightbox-prev').addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    showImage(currentIndex);
+  });
+  
+  document.getElementById('lightbox-next').addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % images.length;
+    showImage(currentIndex);
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('lightboxModal').classList.contains('show')) {
+      if (e.key === 'ArrowLeft') document.getElementById('lightbox-prev').click();
+      if (e.key === 'ArrowRight') document.getElementById('lightbox-next').click();
+      if (e.key === 'Escape') modal.hide();
+    }
+  });
+</script>
+```
+</CodeGroup>
+
+## Advanced Gallery Features
+
+<AccordionGroup>
+  <Accordion title="Masonry Layout">
+    Pinterest-style layout for varied image sizes:
+    
+    ```javascript
+    import Masonry from 'masonry-layout';
+    
+    const grid = document.querySelector('.gallery-grid');
+    const masonry = new Masonry(grid, {
+      itemSelector: '.gallery-item',
+      columnWidth: '.grid-sizer',
+      percentPosition: true,
+      gutter: 16
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Infinite Scroll">
+    Load more images as user scrolls:
+    
+    ```javascript
+    let page = 1;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        loadMoreImages(++page);
+      }
+    });
+    
+    observer.observe(document.querySelector('#load-more-trigger'));
+    ```
+  </Accordion>
+  
+  <Accordion title="Image Zoom & Pan">
+    Allow detailed viewing of high-resolution images using libraries like Panzoom
+  </Accordion>
+  
+  <Accordion title="Download Options">
+    Let visitors download images (with watermark for copyright):
+    
+    ```javascript
+    function downloadImage(src, filename) {
+      const link = document.createElement('a');
+      link.href = src;
+      link.download = filename;
+      link.click();
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Social Sharing">
+    Share individual images on social media with proper Open Graph tags
+  </Accordion>
+</AccordionGroup>
+
+## User-Generated Content
+
+<Info>
+  Allow visitors to submit their own photos from zoo visits with moderation.
+</Info>
+
+### Submission Form
+
+```astro
+<form id="photo-submission" enctype="multipart/form-data">
+  <h3>Comparte tus Fotos</h3>
+  
+  <div class="mb-3">
+    <label class="form-label">Sube tu foto</label>
+    <input 
+      type="file" 
+      class="form-control" 
+      accept="image/*"
+      multiple
+      required
+    />
+  </div>
+  
+  <div class="mb-3">
+    <label class="form-label">Título</label>
+    <input type="text" class="form-control" required />
+  </div>
+  
+  <div class="mb-3">
+    <label class="form-label">Descripción</label>
+    <textarea class="form-control" rows="3"></textarea>
+  </div>
+  
+  <div class="mb-3">
+    <label class="form-label">Tu nombre</label>
+    <input type="text" class="form-control" required />
+  </div>
+  
+  <div class="form-check mb-3">
+    <input 
+      type="checkbox" 
+      class="form-check-input" 
+      id="rights" 
+      required
+    />
+    <label class="form-check-label" for="rights">
+      Confirmo que tengo los derechos de esta imagen y autorizo 
+      a ZOODOM a usarla con fines promocionales
+    </label>
+  </div>
+  
+  <button type="submit" class="btn btn-success">
+    Enviar fotos
+  </button>
+</form>
+```
+
+## Video Gallery
+
+Extend the gallery to include videos:
+
+<Tabs>
+  <Tab title="Embedded Videos">
+    YouTube/Vimeo embeds for professionally produced content
+    
+    ```astro
+    <div class="video-item">
+      <div class="ratio ratio-16x9">
+        <iframe 
+          src="https://www.youtube.com/embed/VIDEO_ID" 
+          allowfullscreen
+        ></iframe>
+      </div>
+      <h4>{videoTitle}</h4>
+    </div>
+    ```
+  </Tab>
+  
+  <Tab title="Self-Hosted Videos">
+    Use HTML5 video with poster images
+    
+    ```astro
+    <video 
+      controls 
+      poster="/images/video-posters/feeding-time.jpg"
+      class="w-100"
+    >
+      <source src="/videos/feeding-time.mp4" type="video/mp4" />
+      <source src="/videos/feeding-time.webm" type="video/webm" />
+    </video>
+    ```
+  </Tab>
+  
+  <Tab title="Live Streams">
+    Embed live camera feeds from animal habitats
+    
+    ```astro
+    <div class="live-cam">
+      <span class="badge bg-danger">EN VIVO</span>
+      <h3>Cámara de Pandas</h3>
+      <iframe src="{streamUrl}" class="w-100" height="400"></iframe>
+    </div>
+    ```
+  </Tab>
+</Tabs>
+
+## Performance Optimization
+
+<CardGroup cols={2}>
+  <Card title="Image Optimization" icon="gauge-high">
+    Use Astro's built-in `<Image>` component for automatic optimization
+  </Card>
+  <Card title="Lazy Loading" icon="hourglass">
+    Load images only when they enter the viewport
+  </Card>
+  <Card title="Progressive Loading" icon="spinner">
+    Show low-quality placeholder while high-res loads
+  </Card>
+  <Card title="CDN Delivery" icon="server">
+    Serve images from a CDN for faster global access
+  </Card>
+</CardGroup>
+
+<CodeGroup>
+```astro Optimized Image Component
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}
+
+const { src, alt, width = 800, height = 600 } = Astro.props;
+---
+
+<Image 
+  src={src}
+  alt={alt}
+  width={width}
+  height={height}
+  format="webp"
+  loading="lazy"
+  decoding="async"
+  quality={80}
+/>
+```
+</CodeGroup>
+
+## Analytics & Insights
+
+Track gallery engagement:
+
+```typescript
+interface GalleryAnalytics {
+  albumId: string;
+  views: number;
+  averageTimeSpent: number;
+  mostViewedImage: string;
+  shareCount: number;
+  downloadCount: number;
+}
+```
+
+<Tip>
+  Use this data to understand which animals and content types are most popular with visitors, informing future content creation and marketing strategies.
+</Tip>

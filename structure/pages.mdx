@@ -1,0 +1,311 @@
+---
+title: 'Pages'
+description: 'Understanding the page structure and routing in ZOODOM'
+icon: 'file-code'
+---
+
+## Overview
+
+ZOODOM uses **Astro's file-based routing** system. Every `.astro` file in the `src/pages/` directory automatically becomes a route in your website.
+
+## Current Pages
+
+The project currently has one main page:
+
+```
+src/pages/
+└── index.astro    → Routes to / (homepage)
+```
+
+<Info>
+  **File-based Routing:** In Astro, the file name determines the URL path. For example, `about.astro` would create the `/about` route.
+</Info>
+
+## Homepage Structure
+
+The homepage (`index.astro`) is the main entry point for visitors. Let's break down its structure:
+
+### Frontmatter
+
+The frontmatter section imports dependencies:
+
+```astro src/pages/index.astro
+---
+import Layout from '../layouts/Layout.astro';
+import logo from'../assets/logo.svg';
+import HeroImg from '../assets/hero-img.png';
+import Texture from '../assets/texture.png';
+---
+```
+
+<Note>
+  Astro's asset imports are automatically optimized during the build process for better performance.
+</Note>
+
+### Page Sections
+
+The homepage is organized into three main sections:
+
+<Tabs>
+  <Tab title="Navigation">
+    ```astro
+    <nav class="navbar navbar-expand-lg">
+      <section class="container px-5 py-4">
+        <a class="navbar-brand" href="#">
+          <img src={logo.src} class="logo" alt="">
+        </a>
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-4">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Especies</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Galeria</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Blog</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contacto</a>
+          </li>
+        </ul>
+      </section>
+    </nav>
+    ```
+    
+    The navigation bar includes:
+    - Logo image
+    - Five navigation links (Home, Species, Gallery, Blog, Contact)
+    - Bootstrap's responsive navbar classes
+  </Tab>
+  
+  <Tab title="Hero Section">
+    ```astro
+    <header class="overflow-hidden">
+      <section class="container px-4 px-lg-5 py-5 my-5">
+        <section class="row d-flex justify-content-between align-items-center">
+          <section class="col-lg-6 col-md-6 col-12">
+            <h1>Bienvenido a nuestro zoológico</h1>
+            <p>Planea una salida en familia a nuestro parque zoológico nacional 
+               para que te diviertas en una esperiencia innovidable.</p>
+            <button class="btn btn-success px-5 py-2 rounded-pill">
+              Reservar ahora
+            </button>
+          </section>
+          <section class="col-lg-6 col-md-6 col-12 position-relative">
+            <img src={HeroImg.src} class="img-fluid position-absolute" alt="Hero Image">
+          </section>
+        </section>
+      </section>
+    </header>
+    ```
+    
+    The hero section features:
+    - **Two-column layout** (text on left, image on right)
+    - **Headline:** "Bienvenido a nuestro zoológico"
+    - **Call-to-action:** "Reservar ahora" button
+    - **Hero image** positioned absolutely
+  </Tab>
+  
+  <Tab title="Content Section">
+    ```astro
+    <section id="">
+      <img src={Texture.src} alt="Texture" class="img-fluid ">
+      <section class="container">
+      </section>
+    </section>
+    ```
+    
+    This section includes:
+    - Decorative texture image
+    - Empty container ready for additional content
+  </Tab>
+</Tabs>
+
+## Layout Wrapper
+
+The entire page is wrapped in the `Layout` component:
+
+```astro src/pages/index.astro
+<Layout>
+  <main>
+    <!-- Page content here -->
+  </main>
+</Layout>
+```
+
+<Check>
+  This pattern ensures consistent HTML structure, meta tags, and global scripts across all pages.
+</Check>
+
+## Responsive Design
+
+The homepage uses Bootstrap's responsive grid classes:
+
+<CodeGroup>
+```html Mobile (col-12)
+<!-- Full width on mobile devices -->
+<section class="col-12">
+  <!-- Content -->
+</section>
+```
+
+```html Tablet (col-md-6)
+<!-- Half width on tablets -->
+<section class="col-md-6">
+  <!-- Content -->
+</section>
+```
+
+```html Desktop (col-lg-6)
+<!-- Half width on large screens -->
+<section class="col-lg-6">
+  <!-- Content -->
+</section>
+```
+</CodeGroup>
+
+## Navigation Links
+
+The site includes placeholders for five main sections:
+
+<CardGroup cols={2}>
+  <Card title="Inicio" icon="home">
+    Homepage - Currently active
+  </Card>
+  
+  <Card title="Especies" icon="paw">
+    Animal species catalog (to be implemented)
+  </Card>
+  
+  <Card title="Galeria" icon="images">
+    Photo gallery (to be implemented)
+  </Card>
+  
+  <Card title="Blog" icon="newspaper">
+    Blog posts and articles (to be implemented)
+  </Card>
+  
+  <Card title="Contacto" icon="envelope">
+    Contact information and form (to be implemented)
+  </Card>
+</CardGroup>
+
+## Adding New Pages
+
+To add a new page to ZOODOM:
+
+<Steps>
+  <Step title="Create a new .astro file">
+    Add a new file in `src/pages/`. For example, `especies.astro` for `/especies` route.
+  </Step>
+  
+  <Step title="Import the Layout">
+    ```astro
+    ---
+    import Layout from '../layouts/Layout.astro';
+    ---
+    ```
+  </Step>
+  
+  <Step title="Wrap content in Layout">
+    ```astro
+    <Layout>
+      <main>
+        <!-- Your page content -->
+      </main>
+    </Layout>
+    ```
+  </Step>
+  
+  <Step title="Update navigation links">
+    Update the href attributes in `index.astro` navigation to link to your new pages.
+  </Step>
+</Steps>
+
+<Warning>
+  **Important:** Currently, all navigation links point to `#` (same page). Update these to actual routes like `/especies`, `/galeria`, etc. when creating new pages.
+</Warning>
+
+## Complete Code
+
+<Accordion title="View complete index.astro file">
+```astro src/pages/index.astro
+---
+import Layout from '../layouts/Layout.astro';
+import logo from'../assets/logo.svg';
+import HeroImg from '../assets/hero-img.png';
+import Texture from '../assets/texture.png';
+---
+
+<Layout>
+	<main>
+		<nav class="navbar navbar-expand-lg">
+			<section class="container px-5 py-4">
+				<a class="navbar-brand" href="#">
+					<img src={logo.src} class="logo" alt="">
+				</a>
+				<ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-4">
+					<li class="nav-item">
+						<a class="nav-link active" aria-current="page" href="#">Inicio</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Especies</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Galeria</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Blog</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Contacto</a>
+					</li>
+				</ul>
+			</section>
+		</nav>
+		<header class="overflow-hidden">
+			<section class="container px-4 px-lg-5 py-5 my-5">
+				<section class="row d-flex justify-content-between align-items-center">
+					<section class="col-lg-6 col-md-6 col-12">
+						<h1>Bienvenido a nuestro zoológico</h1>
+						<p>Planea una salida en familia a nuestro parque zoológico nacional para que te diviertas en una esperiencia innovidable.</p>
+						<button class="btn btn-success px-5 py-2 rounded-pill">Reservar ahora</button>
+					</section>
+					<section class="col-lg-6 col-md-6 col-12 position-relative">
+						<img src={HeroImg.src} class="img-fluid position-absolute" alt="Hero Image">
+					</section>
+				</section>
+			</section>
+		</header>
+		<section id="" >
+			<img src={Texture.src} alt="Texture" class="img-fluid ">
+			<section class="container">
+			</section>
+		</section>
+	</main>
+</Layout>
+```
+</Accordion>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Semantic HTML" icon="code">
+    Use appropriate HTML5 elements like `<nav>`, `<header>`, `<main>`, and `<section>`
+  </Card>
+  
+  <Card title="Accessibility" icon="universal-access">
+    Include alt text for images and ARIA attributes for navigation
+  </Card>
+  
+  <Card title="Asset Imports" icon="file-import">
+    Import assets in frontmatter for Astro's optimization pipeline
+  </Card>
+  
+  <Card title="Layout Consistency" icon="layer-group">
+    Always wrap pages in the Layout component for consistent structure
+  </Card>
+</CardGroup>

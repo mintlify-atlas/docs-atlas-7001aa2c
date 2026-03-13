@@ -1,0 +1,298 @@
+---
+title: 'Deployment'
+description: 'Deploy the ZOODOM project to Netlify and other hosting platforms'
+---
+
+This guide covers deploying ZOODOM to production, with a focus on the current Netlify deployment.
+
+## Current Deployment
+
+ZOODOM is currently deployed on **Netlify** at:
+
+🌐 **[https://zoodomi.netlify.app](https://zoodomi.netlify.app)**
+
+This URL is configured in `astro.config.mjs` as the `site` property.
+
+## Deploying to Netlify
+
+Netlify provides seamless hosting for static sites built with Astro.
+
+### Prerequisites
+
+- A [Netlify account](https://app.netlify.com/signup) (free tier available)
+- Your ZOODOM repository on GitHub
+- Admin access to the repository
+
+### Initial Setup
+
+<Steps>
+  <Step title="Connect Repository">
+    1. Log in to [Netlify](https://app.netlify.com)
+    2. Click **Add new site** → **Import an existing project**
+    3. Choose **GitHub** as your Git provider
+    4. Authorize Netlify to access your repositories
+    5. Select the `zoodom` repository
+  </Step>
+
+  <Step title="Configure Build Settings">
+    Set the following build configuration:
+
+    | Setting | Value |
+    | --- | --- |
+    | **Base directory** | (leave empty) |
+    | **Build command** | `npm run build` |
+    | **Publish directory** | `dist` |
+    | **Node version** | 22.12.0 or higher |
+
+    <Tip>
+      You can also specify the Node version by adding a `.nvmrc` file to your repository with `22.12.0`.
+    </Tip>
+  </Step>
+
+  <Step title="Deploy">
+    Click **Deploy site**. Netlify will:
+    
+    1. Clone your repository
+    2. Install dependencies with `npm install`
+    3. Run `npm run build`
+    4. Publish the `dist/` directory
+    5. Assign a URL (initially random, e.g., `random-name-123.netlify.app`)
+  </Step>
+
+  <Step title="Configure Custom Domain (Optional)">
+    To use the `zoodomi.netlify.app` domain:
+    
+    1. Go to **Site settings** → **Domain management**
+    2. Click **Options** → **Edit site name**
+    3. Change the site name to `zoodomi`
+    4. Your site will be available at `zoodomi.netlify.app`
+  </Step>
+</Steps>
+
+### Continuous Deployment
+
+Netlify automatically deploys your site when you push to your repository:
+
+1. **Push to main branch** → Triggers production deployment
+2. **Push to other branches** → Creates deploy preview (optional)
+3. **Pull requests** → Generates preview deployments for testing
+
+<Info>
+  Every commit to the main branch automatically triggers a new deployment. No manual intervention needed!
+</Info>
+
+### Environment Variables
+
+If your site needs environment variables:
+
+1. Go to **Site settings** → **Environment variables**
+2. Click **Add a variable**
+3. Enter the key and value
+4. Click **Save**
+
+Variables are available during build time through `import.meta.env`.
+
+## Build Configuration
+
+Netlify reads build settings from your repository. You can also create a `netlify.toml` file for advanced configuration:
+
+```toml
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22.12.0"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
+<Tip>
+  The redirect rule ensures that client-side routing works correctly if you add dynamic routes in the future.
+</Tip>
+
+## Deployment Checklist
+
+Before deploying to production:
+
+<Check>
+  - [ ] Test build locally with `npm run build`
+  - [ ] Preview with `npm run preview`
+  - [ ] Verify `site` URL in `astro.config.mjs` matches Netlify domain
+  - [ ] Commit all changes to repository
+  - [ ] Push to GitHub
+  - [ ] Check Netlify build logs for errors
+  - [ ] Test deployed site on multiple devices
+  - [ ] Verify all links and navigation work
+  - [ ] Check browser console for errors
+</Check>
+
+## Monitoring Deployments
+
+### View Build Logs
+
+1. Go to your site in Netlify dashboard
+2. Click **Deploys**
+3. Select a deployment to view logs
+
+Logs show:
+- Install progress
+- Build output
+- Any errors or warnings
+- Deployment status
+
+### Deploy Status
+
+Deployments can have these states:
+
+- **Building** - Site is being built
+- **Published** - Successfully deployed
+- **Failed** - Build or deployment failed
+- **Canceled** - Deployment was manually stopped
+
+## Rollback Deployments
+
+If a deployment introduces issues:
+
+1. Go to **Deploys**
+2. Find a previous successful deployment
+3. Click **Publish deploy**
+4. Your site instantly reverts to that version
+
+<Warning>
+  Rollbacks are instant and affect the live site immediately. Use with caution.
+</Warning>
+
+## Troubleshooting
+
+### Build Fails on Netlify
+
+If the build succeeds locally but fails on Netlify:
+
+**Check Node.js version:**
+```bash
+# Add .nvmrc file to your repository
+echo "22.12.0" > .nvmrc
+```
+
+**Review build logs:**
+1. Go to **Deploys** → Failed deployment
+2. Scroll through logs to find the error
+3. Common issues:
+   - Missing dependencies
+   - Node version mismatch
+   - Environment variables not set
+   - TypeScript errors
+
+### Site Shows 404 Errors
+
+If pages return 404 errors:
+
+1. Verify the **Publish directory** is set to `dist`
+2. Check that `npm run build` generates files in `dist/`
+3. Review deploy logs for warnings
+
+### Assets Not Loading
+
+If CSS, images, or JavaScript files don't load:
+
+1. Verify the `site` URL in `astro.config.mjs` matches your Netlify domain:
+   ```javascript
+   site: 'https://zoodomi.netlify.app'
+   ```
+2. Check that asset paths use relative URLs, not absolute paths
+3. Clear browser cache and test again
+
+### Deployment Takes Too Long
+
+If builds are slow:
+
+1. Check if you have large dependencies - consider using lighter alternatives
+2. Optimize images before committing to repository
+3. Review build logs for slow steps
+
+### Environment Variables Not Working
+
+If environment variables aren't accessible:
+
+1. Verify they're set in **Site settings** → **Environment variables**
+2. Ensure they're accessed with `import.meta.env.VARIABLE_NAME`
+3. Trigger a new deployment (variables need a rebuild)
+
+## Alternative Hosting Options
+
+While ZOODOM is currently on Netlify, Astro sites can be deployed to:
+
+### Vercel
+
+```bash
+npm i -g vercel
+vercel deploy
+```
+
+### Cloudflare Pages
+
+1. Connect repository in Cloudflare dashboard
+2. Build command: `npm run build`
+3. Output directory: `dist`
+
+### GitHub Pages
+
+Requires additional configuration for base path. See [Astro GitHub Pages docs](https://docs.astro.build/en/guides/deploy/github/).
+
+### Any Static Host
+
+Since Astro builds to static files, you can deploy `dist/` to:
+- AWS S3 + CloudFront
+- Azure Static Web Apps
+- DigitalOcean App Platform
+- Any web server (Apache, Nginx, etc.)
+
+Simply run `npm run build` and upload the `dist/` folder.
+
+## Performance Optimization
+
+To improve deployment performance:
+
+### Enable Caching
+
+Netlify automatically caches:
+- `node_modules/` between builds
+- Build artifacts
+
+No configuration needed.
+
+### Optimize Images
+
+Before committing images:
+
+1. Compress images with tools like [TinyPNG](https://tinypng.com)
+2. Use appropriate formats (WebP for photos, SVG for logos)
+3. Keep image dimensions reasonable
+
+### Minimize Dependencies
+
+Regularly review `package.json`:
+
+```bash
+npm outdated
+npm prune
+```
+
+Remove unused packages to speed up installs.
+
+## Next Steps
+
+After deployment:
+
+- Set up [local development environment](/development/local-setup)
+- Learn about the [build process](/development/building)
+- Explore [project structure](/structure/overview)
+- Configure [custom domain](https://docs.netlify.com/domains-https/custom-domains/) (Netlify docs)
+
+<Info>
+  For more advanced deployment options, check the [Astro deployment documentation](https://docs.astro.build/en/guides/deploy/).
+</Info>

@@ -1,0 +1,232 @@
+---
+title: 'Layout Component'
+description: 'Main layout wrapper with Bootstrap integration for ZOODOM'
+---
+
+# Layout Component
+
+The `Layout.astro` component serves as the main layout wrapper for the ZOODOM website. It provides the base HTML structure, integrates Bootstrap 5.3.8 for styling and interactivity, and includes the Head component for SEO.
+
+## Component Code
+
+```astro
+---
+import Head from "../components/Head.astro";
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<Head />
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+			crossorigin="anonymous"
+		/>
+	</head>
+	<body>
+		<slot />
+		<script
+			src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+			integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+			crossorigin="anonymous"></script>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+			integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
+			crossorigin="anonymous"></script>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+			crossorigin="anonymous"></script>
+	</body>
+</html>
+```
+
+## Features
+
+### Bootstrap 5.3.8 Integration
+
+The Layout component integrates Bootstrap via CDN for rapid development and consistent styling:
+
+**CSS (in `<head>`):**
+- Bootstrap 5.3.8 CSS from jsDelivr CDN
+- SRI (Subresource Integrity) hash for security
+- CORS enabled for cross-origin requests
+
+**JavaScript (at end of `<body>`):**
+- **Popper.js** (v2.11.8): Required for Bootstrap tooltips and popovers
+- **Bootstrap.js** (v5.3.8): Core Bootstrap JavaScript functionality
+- **Bootstrap Bundle** (v5.3.8): Includes all Bootstrap JS components plus Popper
+
+<Note>
+All three JavaScript libraries are loaded for maximum compatibility, though in production you may only need the Bootstrap Bundle which includes Popper.
+</Note>
+
+### Spanish Language Support
+
+The HTML element is configured with `lang="es"` attribute, indicating Spanish as the primary language for the site.
+
+### SEO Integration
+
+Includes the [Head component](/components/head) which handles:
+- Meta tags and SEO configuration
+- Open Graph properties
+- Font loading
+- Canonical URLs
+
+### Slot for Content
+
+The `<slot />` element allows child content to be injected into the layout, following Astro's component composition pattern.
+
+## Usage Examples
+
+### Basic Page
+
+Wrap your page content with the Layout component:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <main>
+    <h1>Welcome to ZOODOM</h1>
+    <p>Explore our amazing wildlife collection.</p>
+  </main>
+</Layout>
+```
+
+### With Bootstrap Components
+
+Leverage Bootstrap classes and components:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <main>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h1 class="display-4">Our Animals</h1>
+          <p class="lead">Discover amazing species from around the world.</p>
+          <button class="btn btn-primary">Learn More</button>
+        </div>
+        <div class="col-md-6">
+          <img src="/animals.jpg" class="img-fluid" alt="Animals" />
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+```
+
+### With Navigation and Footer
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Navbar />
+  <main class="container my-5">
+    <h1>About Us</h1>
+    <p>ZOODOM is the premier zoological park in the Dominican Republic.</p>
+  </main>
+  <Footer />
+</Layout>
+```
+
+### Using Bootstrap JavaScript Features
+
+The loaded Bootstrap scripts enable interactive components:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <main class="container">
+    <!-- Accordion -->
+    <div class="accordion" id="faqAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" 
+                  data-bs-toggle="collapse" 
+                  data-bs-target="#collapseOne">
+            What are the opening hours?
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" 
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            We're open daily from 9 AM to 5 PM.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Trigger -->
+    <button class="btn btn-success" data-bs-toggle="modal" 
+            data-bs-target="#reservationModal">
+      Book Now
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="reservationModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Make a Reservation</h5>
+            <button type="button" class="btn-close" 
+                    data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p>Select your visit date...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+```
+
+## How It Works
+
+1. **HTML Structure**: Provides the `<!doctype html>` declaration and base `<html>` element with Spanish language attribute.
+
+2. **Head Section**: 
+   - Imports and renders the Head component for meta tags and SEO
+   - Loads Bootstrap CSS from CDN with integrity checking
+
+3. **Body Section**:
+   - Renders child content via `<slot />`
+   - Loads Bootstrap JavaScript dependencies at the end for optimal page load performance
+
+4. **Script Loading Order**:
+   - Popper.js loads first (dependency for Bootstrap)
+   - Bootstrap.js loads next
+   - Bootstrap Bundle loads last (comprehensive package)
+
+## Bootstrap Resources
+
+With Bootstrap 5.3.8 integrated, you have access to:
+- Responsive grid system (containers, rows, columns)
+- Utility classes for spacing, colors, typography
+- Components: navbar, cards, modals, accordions, carousels, etc.
+- JavaScript plugins: tooltips, popovers, dropdowns, modals
+
+Refer to the [Bootstrap 5.3 documentation](https://getbootstrap.com/docs/5.3/) for complete component and utility reference.
+
+## Related Components
+
+- [Head Component](/components/head) - Manages SEO and meta tags
+- [Navbar Component](/components/navbar) - Navigation bar implementation

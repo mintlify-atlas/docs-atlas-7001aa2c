@@ -1,0 +1,418 @@
+---
+title: Bootstrap Integration
+description: How Bootstrap 5.3.8 is integrated into the ZOODOM website via CDN
+---
+
+ZOODOM integrates **Bootstrap 5.3.8** via CDN to leverage a comprehensive component library while maintaining custom brand styling through CSS variables.
+
+## Integration Method
+
+Bootstrap is loaded in the main layout file (`src/layouts/Layout.astro`) using CDN links with Subresource Integrity (SRI) for security.
+
+### CSS Integration
+
+Bootstrap's CSS is loaded in the `<head>` section:
+
+```html
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+  crossorigin="anonymous"
+/>
+```
+
+**Location**: `src/layouts/Layout.astro:9-14`
+
+### JavaScript Integration
+
+Bootstrap's JavaScript components are loaded at the end of the `<body>` for optimal performance:
+
+```html
+<!-- Popper.js - Required for dropdowns, popovers, and tooltips -->
+<script
+  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+  integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+  crossorigin="anonymous"></script>
+
+<!-- Bootstrap JS -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+  integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
+  crossorigin="anonymous"></script>
+
+<!-- Bootstrap Bundle (includes Popper) -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+  crossorigin="anonymous"></script>
+```
+
+**Location**: `src/layouts/Layout.astro:18-29`
+
+## Security Features
+
+### Subresource Integrity (SRI)
+
+All Bootstrap files are loaded with SRI hashes to ensure file integrity:
+
+- Prevents tampering with CDN resources
+- Verifies that files haven't been modified
+- Adds an extra layer of security
+
+### Cross-Origin Resource Sharing (CORS)
+
+The `crossorigin="anonymous"` attribute:
+
+- Enables CORS requests
+- Prevents sending user credentials
+- Required for SRI to work properly
+
+## CDN Benefits
+
+### Performance
+
+1. **Caching**: Users may already have Bootstrap cached from other sites
+2. **CDN speed**: jsDelivr provides fast, geographically distributed servers
+3. **Reduced server load**: Assets served from external CDN
+4. **Parallel downloads**: Browser can download CDN assets simultaneously with your assets
+
+### Maintenance
+
+- No need to bundle Bootstrap in your build process
+- Easy version updates (change version number in URL)
+- Automatic minification and optimization
+
+## Component Usage
+
+ZOODOM currently uses several Bootstrap components:
+
+### Navigation Bar
+
+Implemented in `src/pages/index.astro:10-33`:
+
+```html
+<nav class="navbar navbar-expand-lg">
+  <section class="container px-5 py-4">
+    <a class="navbar-brand" href="#">
+      <img src={logo.src} class="logo" alt="">
+    </a>
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-4">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Especies</a>
+      </li>
+      <!-- More nav items -->
+    </ul>
+  </section>
+</nav>
+```
+
+**Bootstrap classes used:**
+- `.navbar`, `.navbar-expand-lg` - Responsive navigation
+- `.navbar-brand` - Logo/brand area
+- `.navbar-nav`, `.nav-item`, `.nav-link` - Navigation links
+- `.ms-auto` - Margin start auto (right alignment)
+
+### Grid System
+
+Bootstrap's 12-column responsive grid:
+
+```html
+<section class="container px-4 px-lg-5 py-5 my-5">
+  <section class="row d-flex justify-content-between align-items-center">
+    <section class="col-lg-6 col-md-6 col-12">
+      <h1>Bienvenido a nuestro zoológico</h1>
+      <p>Planea una salida en familia...</p>
+    </section>
+    <section class="col-lg-6 col-md-6 col-12">
+      <img src={HeroImg.src} class="img-fluid" alt="Hero Image">
+    </section>
+  </section>
+</section>
+```
+
+**Location**: `src/pages/index.astro:35-46`
+
+**Bootstrap classes used:**
+- `.container` - Centered content container
+- `.row` - Grid row
+- `.col-lg-6`, `.col-md-6`, `.col-12` - Responsive columns
+- `.d-flex` - Display flex
+- `.justify-content-between` - Space between flex items
+- `.align-items-center` - Vertical centering
+
+### Utility Classes
+
+Bootstrap utilities for spacing and layout:
+
+```html
+<!-- Padding utilities -->
+<div class="px-5 py-4">...</div>  <!-- Horizontal and vertical padding -->
+<div class="px-4 px-lg-5">...</div>  <!-- Responsive padding -->
+
+<!-- Margin utilities -->
+<div class="py-5 my-5">...</div>  <!-- Padding and margin vertical -->
+<div class="mb-2 mb-lg-0">...</div>  <!-- Responsive margin bottom -->
+<div class="ms-auto">...</div>  <!-- Margin start auto -->
+
+<!-- Display utilities -->
+<div class="d-flex">...</div>
+<div class="overflow-hidden">...</div>
+
+<!-- Position utilities -->
+<div class="position-relative">...</div>
+<div class="position-absolute">...</div>
+```
+
+### Buttons
+
+Bootstrap button components with custom styling:
+
+```html
+<button class="btn btn-success px-5 py-2 rounded-pill">
+  Reservar ahora
+</button>
+```
+
+**Location**: `src/pages/index.astro:40`
+
+**Bootstrap classes used:**
+- `.btn` - Base button styles
+- `.btn-success` - Green button (uses Bootstrap's success color)
+- `.rounded-pill` - Fully rounded button
+
+### Images
+
+Responsive image handling:
+
+```html
+<img src={HeroImg.src} class="img-fluid" alt="Hero Image">
+```
+
+**Bootstrap classes used:**
+- `.img-fluid` - Responsive images (max-width: 100%, height: auto)
+
+## Customization
+
+### Using Bootstrap with Custom Colors
+
+While Bootstrap provides its own color system, ZOODOM maintains custom brand colors through CSS variables. You can combine both:
+
+```html
+<!-- Bootstrap class with custom color -->
+<button class="btn" style="background-color: var(--color-brand-green-600)">
+  Custom Green Button
+</button>
+
+<!-- Or use Bootstrap's success color (green) -->
+<button class="btn btn-success">
+  Bootstrap Success Button
+</button>
+```
+
+### Overriding Bootstrap Styles
+
+Custom styles are loaded after Bootstrap, allowing overrides:
+
+```css
+/* In global.css */
+.btn-success {
+  background-color: var(--color-brand-green-600);
+  border-color: var(--color-brand-green-600);
+}
+
+.btn-success:hover {
+  background-color: var(--color-brand-green-700);
+  border-color: var(--color-brand-green-700);
+}
+```
+
+## Layout Structure
+
+The typical page structure using Bootstrap:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <main>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <!-- Nav content -->
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6">
+            <!-- Content -->
+          </div>
+          <div class="col-lg-6">
+            <!-- Image -->
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Additional sections -->
+    <section>
+      <div class="container">
+        <!-- Section content -->
+      </div>
+    </section>
+  </main>
+</Layout>
+```
+
+## Responsive Breakpoints
+
+Bootstrap 5.3.8 uses these breakpoints:
+
+| Breakpoint | Class Infix | Dimensions |
+|------------|-------------|------------|
+| Extra small | None | &lt;576px |
+| Small | `sm` | ≥576px |
+| Medium | `md` | ≥768px |
+| Large | `lg` | ≥992px |
+| Extra large | `xl` | ≥1200px |
+| Extra extra large | `xxl` | ≥1400px |
+
+### Example Usage
+
+```html
+<!-- Column sizes at different breakpoints -->
+<div class="col-12 col-md-6 col-lg-4">
+  <!-- Full width mobile, half on tablet, third on desktop -->
+</div>
+
+<!-- Responsive padding -->
+<div class="px-3 px-md-4 px-lg-5">
+  <!-- Increasing padding at larger screens -->
+</div>
+```
+
+## Available Components
+
+With Bootstrap 5.3.8 loaded, you have access to:
+
+- **Layout**: Grid system, containers, breakpoints
+- **Navigation**: Navbar, navs, tabs, breadcrumbs
+- **Components**: Cards, modals, dropdowns, carousels, accordions
+- **Forms**: Form controls, validation, input groups
+- **Utilities**: Spacing, display, flexbox, position, colors
+- **Typography**: Headings, paragraphs, text utilities
+
+Refer to [Bootstrap 5.3 documentation](https://getbootstrap.com/docs/5.3/) for complete component details.
+
+## Best Practices
+
+### 1. Use Bootstrap Classes First
+
+Leverage Bootstrap's utility classes before writing custom CSS:
+
+```html
+<!-- Good: Using Bootstrap utilities -->
+<div class="d-flex justify-content-between align-items-center p-4">
+
+<!-- Avoid: Custom CSS for common layouts -->
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem;">
+```
+
+### 2. Combine with Custom Colors
+
+Use Bootstrap layout and ZOODOM colors:
+
+```html
+<div class="card" style="border-color: var(--color-brand-green-500)">
+  <div class="card-body" style="background-color: var(--color-brand-green-50)">
+    <h5 class="card-title" style="color: var(--color-brand-green-900)">Title</h5>
+  </div>
+</div>
+```
+
+### 3. Semantic HTML
+
+Use semantic HTML elements with Bootstrap classes:
+
+```html
+<!-- Good -->
+<nav class="navbar">
+<header class="container">
+<section class="row">
+
+<!-- Avoid -->
+<div class="navbar">
+<div class="container">
+```
+
+### 4. Mobile-First Approach
+
+Bootstrap is mobile-first, so structure your classes accordingly:
+
+```html
+<!-- Mobile-first: Start with mobile, add desktop classes -->
+<div class="col-12 col-lg-6">
+```
+
+## Performance Considerations
+
+### CDN vs. Self-Hosted
+
+**Current (CDN):**
+- ✓ Fast delivery via global CDN
+- ✓ Potential browser cache hits
+- ✓ No build process needed
+- ✗ External dependency
+- ✗ Requires internet connection
+
+**Alternative (Self-hosted):**
+- ✓ Full control over assets
+- ✓ Works offline
+- ✓ Can tree-shake unused CSS
+- ✗ Larger bundle size
+- ✗ Requires build process
+
+### Optimization Tips
+
+1. **Remove unused components**: Consider using Bootstrap's Sass source to include only needed components
+2. **Defer non-critical JavaScript**: Add `defer` attribute if interactive components aren't immediately needed
+3. **Consider bundle**: The bundle version combines Bootstrap + Popper, reducing HTTP requests
+
+## Migration to Self-Hosted
+
+If you want to self-host Bootstrap in the future:
+
+```bash
+npm install bootstrap @popperjs/core
+```
+
+Then import in your Astro layout:
+
+```astro
+---
+import 'bootstrap/dist/css/bootstrap.min.css';
+---
+```
+
+And add to your Astro config:
+
+```javascript
+// astro.config.mjs
+export default {
+  vite: {
+    resolve: {
+      alias: {
+        '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
+      }
+    }
+  }
+}
+```
