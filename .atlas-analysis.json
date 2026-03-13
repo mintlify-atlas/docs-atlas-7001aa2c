@@ -1,0 +1,68 @@
+{
+  "projectType": "frontend",
+  "projectName": "ZOODOM",
+  "projectDescription": "A modern zoo website built with Astro, featuring species catalogs, event calendars, visitor planning tools, and educational resources for the National Zoological Park.",
+  "theme": "almond",
+  "primaryColor": "#51B063",
+  "lightColor": "#ACFFBC",
+  "darkColor": "#246C32",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart", "installation"]
+          },
+          {
+            "group": "Project Structure",
+            "pages": ["structure/overview", "structure/pages", "structure/components", "structure/layouts", "structure/assets"]
+          },
+          {
+            "group": "Features",
+            "pages": ["features/homepage", "features/species-catalog", "features/event-calendar", "features/visit-planning", "features/blog", "features/gallery"]
+          },
+          {
+            "group": "Styling",
+            "pages": ["styling/design-system", "styling/colors", "styling/typography", "styling/bootstrap-integration"]
+          },
+          {
+            "group": "Development",
+            "pages": ["development/local-setup", "development/building", "development/deployment"]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Core Components",
+            "pages": ["components/head", "components/layout"]
+          },
+          {
+            "group": "Navigation",
+            "pages": ["components/navbar"]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Species catalog with detailed information",
+    "Event calendar for zoo activities",
+    "Visit planning and reservations",
+    "Educational blog content",
+    "Multimedia gallery",
+    "Bootstrap-based responsive design",
+    "SEO and accessibility optimized",
+    "Multi-language meta tags support"
+  ],
+  "publicApiSurface": [
+    "Layout component - Main layout wrapper with Bootstrap integration",
+    "Head component - SEO and meta tags configuration",
+    "Homepage - Main landing page with hero section",
+    "Navigation - Species, Gallery, Blog, Contact sections",
+    "Color system - Comprehensive green-themed color palette"
+  ]
+}
